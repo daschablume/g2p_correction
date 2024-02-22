@@ -1,0 +1,20 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Default Title{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='icons/ear.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <style>
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

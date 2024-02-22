@@ -1,0 +1,33 @@
+.form-container {
+    margin: 20px;
+    display: flex;
+    align-items: center;
+}
+.input-window {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.speaker-button {
+    background-color: #f1f1f1;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.speaker-button:focus {
+    outline: none;
+}
+.speaker-button:hover {
+    background-color: #ddd;
+}
+.speaker-icon {
+    width: 24px;
+    height: 24px;
+    background: url('speaker-icon-path.svg') no-repeat center center;
+    background-size: cover;
+    display: inline-block;
+}
