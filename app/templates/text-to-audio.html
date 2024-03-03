@@ -3,74 +3,77 @@
 {% block title %}G2P Correction{% endblock %}
 
 {% block content %}
-<div class="vh-100 d-flex justify-content-center align-items-center">
-    {% if audio %}
-        <audio id="audioPlayer" style="display:none;">
-            <source src="{{ audio }}" type="audio/aac">
-            Your browser does not support the audio element.
-        </audio>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var audioPlayer = document.getElementById('audioPlayer');
-                if (audioPlayer) {
-                    audioPlayer.play()
-                    .catch(error => console.error("Audio play failed:", error));
-                }
-            });
-        </script>
-    {% endif %}
-    <div class="w-75">
+<link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 
-        <form class="d-flex justify-content-between" action="{{ url_for('interface.text_to_audio') }}" method="POST">
-            <input type="text" class="form-control form-control-lg mr-2" name="text" placeholder="Enter text" 
-                {% if text %} value="{{ text }}" {% endif %}>
-            <button type="submit" class="btn btn-primary" title="Listen">
-                <img src="{{ url_for('static', filename='icons/ear.svg') }}" alt="Play" style="width: 20px; height: 20px;">
-            </button>
-            <a href="{{ url_for('interface.text_to_audio')}}" method="GET" class="btn btn-secondary" title="Clear form">
-                <img src="{{ url_for('static', filename='icons/skip-forward-circle.svg') }}" alt="Clear form" style="width: 20px; height: 20px;">
-            </a>
-        </form>
-        
-        {% if word2phoneme_audio %}
-            <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
-            <div id="words-container" class="mt-3">
-                <ul class="tree">
-                    <input class="hidden" type="text" name="text" value="{{ text }}">
-                    {% for word, phoneme_audios in word2phoneme_audio.items() %}
-                    <li>
-                        <details>
-                            <summary class="btn btn-primary">{{ word }}</summary>
-                            <ul>
-                                {% for phoneme_audio in phoneme_audios %}
-                                    {% set phoneme, audio = phoneme_audio %}
-                                    <input type="hidden" name="word" value="{{ word }}">
-                                    <input type="radio" name="selected_word" value="{{ word }}"
-                                            {% if selected_word == word %}checked{% endif %}
-                                    >
-                                    <li class="btn btn-outline-secondary"
-                                        onclick="playAudio('{{audio}}')">
-                                        {{ phoneme}}
-                                    </li>
-                                    <input type="hidden" name="selected_phoneme_{{ word }}" value="{{ phoneme }}">
-                                {% endfor %}
-                            </ul>
-                        </details>  
-                    </li>
-                    {% endfor %}
-                </ul>
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-8">
+            {% if audio %}
+                <audio id="audioPlayer" style="display:none;">
+                    <source src="{{ audio }}" type="audio/aac">
+                    Your browser does not support the audio element.
+                </audio>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var audioPlayer = document.getElementById('audioPlayer');
+                        if (audioPlayer) {
+                            audioPlayer.play()
+                            .catch(error => console.error("Audio play failed:", error));
+                        }
+                    });
+                </script>
+            {% endif %}
+            <div class="card p-4 mb-4">
+                <h3 class="text-center mb-4">G2P Correction</h3>
+                <form action="{{ url_for('interface.text_to_audio') }}" method="POST">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="text" placeholder="Enter sentence (10 words maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
+                        <button type="submit" class="btn btn-primary">Generate</button>
+                    </div>
+                </form>
+                {% if word2phoneme_audio %}
+                    <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
+                        <div class="mt-4">
+                            <h5>Choose the phoneme considered to be wrong:</h5>
+                            {% for word, phoneme_audios in word2phoneme_audio.items() %}
+                            <div class="card mb-3">
+                                <div class="card-header">{{ word }}</div>
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        {% for phoneme_audio in phoneme_audios %}
+                                            {% set phoneme, audio = phoneme_audio %}
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
+                                                {% if selected_word == word %}checked{% endif %}>
+                                            <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
+                                            <input type="hidden" name="selected_phoneme_{{ word }}" value="{{ phoneme }}">
+                                        </div>
+                                            
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Confirm</button>
+                        </div>
+                    </form>
+                {% endif %}
             </div>
-            <input type="submit" class="btn btn-success" name="submit_phonemes">
-            </form>
-
-        {% endif %}
-            
-        <script>
-            function playAudio(audioUrl) {
-                const audio = new Audio(audioUrl);
-                audio.play()
-            }
-        </script>
+        </div>
     </div>
 </div>
+
+<script>
+    function playAudio(audioUrl, word) {
+        const audio = new Audio(audioUrl);
+        audio.play()
+        // Select the radio button associated with the word
+        // Select the radio button associated with the word
+        document.querySelector('input[name="selected_word_' + word + '"]').checked = true;
+        // document.querySelector('input[name="selected_word"][value="' + word + '"]').checked = true;
+    }
+</script>
+
 {% endblock %}

@@ -11,3 +11,4 @@ regex==2021.7.6
 tqdm==4.61.2
 Werkzeug==3.0.1
 zipp==3.17.0
+matcha-tts
