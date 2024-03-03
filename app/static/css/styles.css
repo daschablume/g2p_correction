@@ -73,6 +73,17 @@
     margin-left: 10px;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Adjust the margin-top value as needed */
+}
+
+.button-container button {
+    width: 100px;
+    margin-right: 2vw; /* Adjust the margin-right value to set the gap between buttons */
+}
+
 .item-button {
     min-width: 100px;
     max-width: fit-content;
