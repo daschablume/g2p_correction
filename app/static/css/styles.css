@@ -1,8 +1,68 @@
-.form-container {
+:root {
+    --color-light: white;
+    --color-btn: #212121
+    --color-dark: #212121;
+    --color-shadow: #302d2d;
+    --color-bg: #fee573;
+    --color-btn: #4176ea;
+    --color-item:#fabc35;
+    --color-item-hover:#d89502;
+    --color-signal: #1654da;
+    --color-background: var(#fee573);
+    --color-text: var(--color-dark);
+    --color-accent: var(--color-signal);
+    
+    --size-bezel: .5rem;
+    --size-radius: 4px;
+    
+    line-height: 1.4;
+}
+.text {
+    padding: 20px;
+    font-weight: bolder;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.speaker-button {
+    padding: var(--size-bezel) calc(var(--size-bezel) * 2);
+    background: var(--color-btn);
+    border: none;
+    border-radius: var(--size-radius);
+    font-weight: 900;
+    
+    &[type=reset]{
+      background: var(--color-background);
+      font-weight: 200;
+    } 
+}
+
+.speaker-button:hover {
+    background: var(--color-signal);
+}
+
+.container {
+    height: fit-content;
+    padding-bottom: 20px;
     margin: 20px;
-    display: flex;
+    border-radius: 12px;
+    justify-content: center;
+    background-color: var(--color-bg);
+    box-shadow: .5rem .5rem 0 var(--color-shadow, currentColor);
+    gap: 10px;
     align-items: center;
 }
+
+.form-container {
+    /* height: 200px; */
+    margin: 20px;
+    display: flex;
+    border-radius: 12px;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
 .input-window {
     flex-grow: 1;
     padding: 10px;
@@ -10,20 +70,36 @@
     border: 2px solid #ccc;
     border-radius: 5px;
     margin-right: 10px;
+    margin-left: 10px;
 }
-.speaker-button {
-    background-color: #f1f1f1;
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Adjust the margin-top value as needed */
+}
+
+.button-container button {
+    width: 100px;
+    margin-right: 2vw; /* Adjust the margin-right value to set the gap between buttons */
+}
+
+.item-button {
+    min-width: 100px;
+    max-width: fit-content;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    background-color: var(--color-item);
+    padding: var(--size-bezel) calc(var(--size-bezel) * 2);
     border: none;
-    padding: 10px;
-    border-radius: 50%;
+    border-radius: var(--size-radius);
     cursor: pointer;
 }
-.speaker-button:focus {
-    outline: none;
+
+.item-button:hover {
+    background-color: var(--color-item-hover);
 }
-.speaker-button:hover {
-    background-color: #ddd;
-}
+
 .speaker-icon {
     width: 24px;
     height: 24px;
