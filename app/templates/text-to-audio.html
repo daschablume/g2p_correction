@@ -27,7 +27,7 @@
                 <h3 class="text-center mb-4">G2P Correction</h3>
                 <form action="{{ url_for('interface.text_to_audio') }}" method="POST">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (10 words maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
+                        <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (max 100 characters)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
                         <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
                         <button type="submit" class="btn btn-primary">Generate</button>
                     </div>
@@ -35,7 +35,7 @@
                 {% if word2phoneme_audio %}
                     <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
                         <div class="mt-4">
-                            <h5>Choose the phoneme considered to be wrong:</h5>
+                            <h5>Choose the correct transcription:</h5>
                             {% for word, phoneme_audios in word2phoneme_audio.items() %}
                             <div class="card mb-3">
                                 <div class="card-header">
