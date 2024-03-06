@@ -6,101 +6,103 @@
 <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 
 <div class="container-fluid">
-    <div class="row justify-content-center align-items-center min-vh-100">
-        <div class="col-md-8">
-            {% if audio %}
-                <audio id="audioPlayer" style="display:none;">
-                    <source src="{{ audio }}" type="audio/wav">
-                    Your browser does not support the audio element.
-                </audio>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        var audioPlayer = document.getElementById('audioPlayer');
-                        if (audioPlayer) {
-                            audioPlayer.play()
-                            .catch(error => console.error("Audio play failed:", error));
-                        }
-                    });
-                </script>
-            {% endif %}
-            <div class="card p-4 mb-4">
-                <h3 class="text-center mb-4">G2P Correction</h3>
-                <form action="{{ url_for('interface.text_to_audio') }}" method="POST">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (max 100 characters)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
-                        <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
-                        <button type="submit" class="btn btn-primary">Generate</button>
+  <div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-8">
+      {% if audio %}
+        <audio id="audioPlayer" style="display:none;">
+            <source src="{{ audio }}" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+              var audioPlayer = document.getElementById('audioPlayer');
+              if (audioPlayer) {
+                  audioPlayer.play()
+                  .catch(error => console.error("Audio play failed:", error));
+              }
+          });
+          </script>
+      {% endif %}
+      <div class="card p-4 mb-4">
+        <h3 class="text-center mb-4">G2P Correction</h3>
+        <form action="{{ url_for('interface.text_to_audio') }}" method="POST">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (max 100 characters)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
+            <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
+            <button type="submit" class="btn btn-primary">Generate</button>
+          </div>
+        </form>
+        {% if word2phonemized %}
+        <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
+          <div class="mt-4">
+            <h5>Choose the correct transcription:</h5>
+            {% for word, phonemes in word2phonemized.items() %}
+              {% if word.isalpha() %}
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
+                      <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
+                    </button>
+                    {{ word }}
+                  </div>
+                  <div class="card-body" id="{{ word }}_variations" style="display: none;">
+                    <div class="form-check">
+                      {% for phoneme in phonemes %}
+                        {% set checked_phoneme = word2picked_phoneme[word] %}
+                        <div class="form-check">
+                          <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ phoneme }}" 
+                                  id="{{ word }}_{{ loop.index }}"
+                                {% if phoneme == checked_phoneme %}checked{% endif %}>
+                          <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
+                        </div>
+                      {% endfor %}
+                        <div class="form-check">
+                          <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
+                                {% if selected_word == word %}checked{% endif %}>
+                          <input name="selected_phoneme_{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
+                        </div>   
                     </div>
-                </form>
-                {% if word2phonemized %}
-                    <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
-                        <div class="mt-4">
-                            <h5>Choose the correct transcription:</h5>
-                            {% for word, phonemes in word2phonemized.items() %}
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                    <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
-                                        <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
-                                    </button>
-                                    {{ word }}
-                                </div>
-                                <div class="card-body" id="{{ word }}_variations" style="display: none;">
-                                    <div class="form-check">
-                                        {% for phoneme in phonemes %}
-                                            {% set checked_phoneme = word2picked_phoneme[word] %}
-                                            <div class="form-check">
-                                                <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ phoneme }}" id="{{ word }}_{{ loop.index }}"
-                                                    {% if phoneme == checked_phoneme %}checked{% endif %}>
-                                                <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
-                                            </div>
-                                        {% endfor %}
-                                        <div class="form-check">
-                                            <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
-                                            {% if selected_word == word %}checked{% endif %}>
-                                            <input name="selected_phoneme_{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="button-container">
-                            <button type="button" class="btn btn-primary mr-10">Test</button>
-                            <button type="submit" class="btn btn-success">Confirm</button>
-                        </div>
-                    </form>
-                {% endif %}
-            </div>
-        </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="button-container">
+            <button type="button" class="btn btn-primary mr-10">Test</button>
+            <button type="submit" class="btn btn-success">Confirm</button>
+          </div>
+        </form>
+        {% endif %}
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-    function playAudio(audioUrl, word) {
-        const audio = new Audio(audioUrl);
-        audio.play()
-        // Select the radio button associated with the word
-        document.querySelector('input[name="selected_word_' + word + '"]').checked = true;
-    }
+  function playAudio(audioUrl, word) {
+    const audio = new Audio(audioUrl);
+    audio.play()
+    // Select the radio button associated with the word
+    document.querySelector('input[name="selected_word_' + word + '"]').checked = true;
+  }
 
-    function toggleVariations(word) {
-        var variationsDiv = document.getElementById(word + "_variations");
-        var arrowImg = document.querySelector('[data-word="' + word + '"] img');
-        if (variationsDiv.style.display === "none") {
-            variationsDiv.style.display = "block";
-            document.querySelector('button[data-word="' + word + '"] i');
-            arrowImg.src = "../static/icons/arrow-bar-up.svg";
-        } else {
-            variationsDiv.style.display = "none";
-            document.querySelector('button[data-word="' + word + '"] i');
-            arrowImg.src = "../static/icons/arrow-bar-down.svg";
-        }
+  function toggleVariations(word) {
+    var variationsDiv = document.getElementById(word + "_variations");
+    var arrowImg = document.querySelector('[data-word="' + word + '"] img');
+    if (variationsDiv.style.display === "none") {
+        variationsDiv.style.display = "block";
+        document.querySelector('button[data-word="' + word + '"] i');
+        arrowImg.src = "../static/icons/arrow-bar-up.svg";
+    } else {
+        variationsDiv.style.display = "none";
+        document.querySelector('button[data-word="' + word + '"] i');
+        arrowImg.src = "../static/icons/arrow-bar-down.svg";
     }
+  }
 
-    function clearInput() {
-        document.getElementById('inputText').value = '';
-    }
+  function clearInput() {
+    document.getElementById('inputText').value = '';
+  }
 </script>
 
 {% endblock %}
