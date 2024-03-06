@@ -10,7 +10,7 @@
         <div class="col-md-8">
             {% if audio %}
                 <audio id="audioPlayer" style="display:none;">
-                    <source src="{{ audio }}" type="audio/aac">
+                    <source src="{{ audio }}" type="audio/wav">
                     Your browser does not support the audio element.
                 </audio>
                 <script>
@@ -32,11 +32,11 @@
                         <button type="submit" class="btn btn-primary">Generate</button>
                     </div>
                 </form>
-                {% if word2phoneme_audio %}
+                {% if word2phonemized %}
                     <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
                         <div class="mt-4">
                             <h5>Choose the correct transcription:</h5>
-                            {% for word, phoneme_audios in word2phoneme_audio.items() %}
+                            {% for word, phonemes in word2phonemized.items() %}
                             <div class="card mb-3">
                                 <div class="card-header">
                                     <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
@@ -46,13 +46,13 @@
                                 </div>
                                 <div class="card-body" id="{{ word }}_variations" style="display: none;">
                                     <div class="form-check">
-                                        {% for phoneme_audio in phoneme_audios %}
-                                            {% set phoneme, audio = phoneme_audio %}
-                                        <div class="form-check">
-                                            <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
-                                                {% if selected_word == word %}checked{% endif %}>
-                                            <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
-                                        </div>
+                                        {% for phoneme in phonemes %}
+                                            {% set checked_phoneme = word2picked_phoneme[word] %}
+                                            <div class="form-check">
+                                                <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ phoneme }}" id="{{ word }}_{{ loop.index }}"
+                                                    {% if phoneme == checked_phoneme %}checked{% endif %}>
+                                                <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
+                                            </div>
                                         {% endfor %}
                                         <div class="form-check">
                                             <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
