@@ -5,8 +5,6 @@ from matcha_utils import synthesize_matcha_audio, get_audio
 
 
 def text_to_audio():
-    print(f'{request.method=}')
-    print(f'{request.form=}')
     if request.method == 'POST':
         text = request.form['text']
         if text:

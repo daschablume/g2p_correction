@@ -1,8 +1,6 @@
 from collections import defaultdict
 import re
 
-#from app import G2P
-
 PUNCTUATION_STR = r"[!,.\"#$%&\(\)*+:;<=>?@^_`\{|\}~]"
 PUNCT_PATTERN = re.compile(r'\s+(?=' + PUNCTUATION_STR + ')')
 TOK_PATTERN = re.compile(f"\w+'?\w*|{PUNCTUATION_STR}")

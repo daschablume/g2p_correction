@@ -1,4 +1,4 @@
-# matcha-related code: cortesy of matcha. link:
+# matcha-related code: property of matcha-tts. link:
 # https://github.com/shivammehta25/Matcha-TTS/blob/256adc55d3219053d2d086db3f9bd9a4bde96fb1/synthesis.ipynb
 
 import os
@@ -12,12 +12,13 @@ from matcha.hifigan.env import AttrDict
 from matcha.hifigan.models import Generator as HiFiGAN
 # Matcha imports
 from matcha.models.matcha_tts import MatchaTTS
+from matcha.utils.utils import get_user_data_dir
 # G2P imports
 from mfa_g2p.generator import PyniniWordListGenerator
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MATCHA_CHECKPOINT = os.path.join("matcha-models", "matcha_ljspeech.ckpt")
-HIFIGAN_CHECKPOINT = os.path.join("matcha-models", "hifigan_T2_v1")
+MATCHA_CHECKPOINT = get_user_data_dir()/"matcha_ljspeech.ckpt"
+HIFIGAN_CHECKPOINT = get_user_data_dir() / "hifigan_T2_v1"
 G2P_CHECKPOINT= os.path.join("mfa_g2p", "pretrained_models", "english_us_ipa.zip")
 
 
@@ -41,8 +42,7 @@ def load_g2p():
     A simple wrapper around the PyniniWordListGenerator class.
     '''
     g2p = PyniniWordListGenerator(
-        g2p_model_path=pathlib.Path(G2P_CHECKPOINT),
-    )
+        g2p_model_path=pathlib.Path(G2P_CHECKPOINT))
     g2p.setup()
     return g2p
 

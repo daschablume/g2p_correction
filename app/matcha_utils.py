@@ -1,8 +1,7 @@
-# cortesy of matcha. link:
+# matcha-related code: property of matcha-tts. link:
 # https://github.com/shivammehta25/Matcha-TTS/blob/256adc55d3219053d2d086db3f9bd9a4bde96fb1/synthesis.ipynb
 
 import datetime as dt
-import os
 from pathlib import Path
 
 import IPython.display as ipd
@@ -28,9 +27,9 @@ def phonemized_to_sequence(phonemized_text):
     """
     ### 
     Caution: Copied from matcha.text.__init__ with modifications in order to replace
-    _clean_text from the same module. _clean_text evokes english_cleaners2 function,
-    which uses espeak phonemizer. Here, I pass a string of phonemes,
-    taken from mfa g2p phonemizer instead.
+    _clean_text from the same module. 
+    _clean_text evokes english_cleaners2 function, which uses espeak phonemizer.
+    Here, I pass a string of phonemes, taken from mfa g2p phonemizer instead.
     ###
     Converts a string of phonemized text to a sequence of IDs corresponding to the symbols in the text.
     Args:
