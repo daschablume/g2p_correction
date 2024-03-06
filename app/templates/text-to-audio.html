@@ -27,18 +27,21 @@
         <h3 class="text-center mb-4">G2P Correction</h3>
         <form action="{{ url_for('interface.text_to_audio') }}" method="POST">
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (max 100 characters)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
+            <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (100 characters maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
             <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
             <button type="submit" class="btn btn-primary" value="Generate" name="generate">Generate</button>
           </div>
         {% if word2phonemized %}
           <input type="hidden" name="word2phonemized" value='{{ word2phonemized }}'>
           <div class="mt-4">
-            <h5>Choose the correct transcription:</h5>
+            <div id="loadingOverlay" class="loading-overlay">
+              <div class="spinner"></div>
+            </div>
+            <h5>Choose the phoneme considered to be wrong:</h5>
             {% for word, phonemes in word2phonemized.items() %}
               {% if word.isalpha() %}
                 <div class="card mb-3">
-                  <div class="card-header">
+                  <div class="card-header" onclick="toggleVariations('{{ word }}')">
                     <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
                       <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
                     </button>
@@ -80,10 +83,18 @@
 <script>
   function playAudio(audioUrl, word) {
     const audio = new Audio(audioUrl);
-    audio.play()
-    // Select the radio button associated with the word
-    document.querySelector('input[name="selected_word_' + word + '"]').checked = true;
+    // Show loading overlay
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    audio.play().then(function() {
+        // Hide loading overlay when audio finishes playing
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }).catch(function(error) {
+        console.error("Audio play failed:", error);
+        // Hide loading overlay on error
+        document.getElementById('loadingOverlay').style.display = 'none';
+    });
   }
+
 
   function toggleVariations(word) {
     var variationsDiv = document.getElementById(word + "_variations");
