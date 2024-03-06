@@ -8,17 +8,14 @@ import IPython.display as ipd
 import numpy as np
 import soundfile as sf
 import torch
-from tqdm.auto import tqdm
 from types import SimpleNamespace
-
-# trained g2p mfa IPA model
-from ipa_phonemizer import convert_text_to_phonemized
 
 from matcha.text import sequence_to_text
 from matcha.text.symbols import symbols
 from matcha.utils.utils import intersperse
 
-from load_models import MODEL, VOCODER, DENOISER, G2P, DEVICE
+from load_models import MODEL, VOCODER, DENOISER, DEVICE
+HYPERPARAMS = SimpleNamespace(n_timesteps=10, temperature=1.0, length_scale=0.667)
 
 OUTPUT_FOLDER = "static/audio/"
 
@@ -92,18 +89,16 @@ def save_to_folder(filename: str, output: dict, folder: str):
     folder.mkdir(exist_ok=True, parents=True)
     np.save(folder / f'{filename}', output['mel'].cpu().numpy())
     sf.write(folder / f'{filename}.wav', output['waveform'], 22050, 'PCM_24')
+    return folder / f'{filename}.wav'
 
 
 def synthesize_matcha_audio(
-        text: str, model=MODEL, vocoder=VOCODER, denoiser=DENOISER, hyperparams=None
+        text: str, phonemized: str, 
+        model=MODEL, vocoder=VOCODER, denoiser=DENOISER, 
+        hyperparams=HYPERPARAMS
 ):
-    if hyperparams is None:
-       hyperparams = SimpleNamespace(n_timesteps=10, temperature=1.0, length_scale=0.667)
-
     output_folder = OUTPUT_FOLDER
 
-    phonemized, word2phonemized, word2picked_phoneme = convert_text_to_phonemized(text, G2P)
-    
     rtfs = []
     rtfs_w = []
 
@@ -121,21 +116,10 @@ def synthesize_matcha_audio(
     ipd.display(ipd.Audio(output['waveform'], rate=22050))
 
     ## Save the generated waveform
-    save_to_folder("utterance", output, output_folder)
+    output_path = save_to_folder("utterance", output, output_folder)
 
     print(f"Number of ODE steps: {hyperparams.n_timesteps}")
     print(f"Mean RTF:\t\t\t\t{np.mean(rtfs):.6f} ± {np.std(rtfs):.6f}")
     print(f"Mean RTF Waveform (incl. vocoder):\t{np.mean(rtfs_w):.6f} ± {np.std(rtfs_w):.6f}")
 
-    return phonemized, word2phonemized, word2picked_phoneme
-
-
-def get_audio(path='static/audio/utterance.wav'):
-    # the path is static for now, since with each example, we regenerate the audio
-    audio = path
-    return audio
-
-
-if __name__ == "__main__":
-    text = "This is a test"
-    synthesize_matcha_audio(text, MODEL, VOCODER, DENOISER)
+    return output_path

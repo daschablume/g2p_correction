@@ -2,7 +2,7 @@ from collections import defaultdict
 import re
 
 PUNCTUATION_STR = r"[!,.\"#$%&\(\)*+:;<=>?@^_`\{|\}~]"
-PUNCT_PATTERN = re.compile(r'\s+(?=' + PUNCTUATION_STR + ')')
+PUNCT_PATTERN = re.compile(r"\s+(?=" + PUNCTUATION_STR + ")")
 TOK_PATTERN = re.compile(f"\w+'?\w*|{PUNCTUATION_STR}")
 
 
@@ -26,7 +26,7 @@ def convert_text_to_phonemized(input_str, g2p):
             word2phonemized[word].append(word)
         else:
             phonemized = g2p.rewriter(word)
-            phonemized = set(pho.replace(' ', '') for pho in phonemized)
+            phonemized = set(pho.replace(" ", "") for pho in phonemized)
             word2phonemized[word] = list(phonemized.union(word2phonemized[word]))
     
     # join phonemes into one list: one phoneme per word;
@@ -43,6 +43,10 @@ def convert_text_to_phonemized(input_str, g2p):
         phonemes.append(phoneme)
     
     # remove whitespaces before punctuation and join the phonemes
-    phonemized_str = re.sub(PUNCT_PATTERN, '', ' '.join(phonemes))
+    phonemized_str = phonemes_to_string(phonemes)
     
     return phonemized_str, word2phonemized, word2picked_phoneme
+
+
+def phonemes_to_string(phonemes: list[str]) -> str:
+    return re.sub(PUNCT_PATTERN, "", " ".join(phonemes))

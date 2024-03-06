@@ -29,11 +29,10 @@
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (max 100 characters)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
             <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
-            <button type="submit" class="btn btn-primary">Generate</button>
+            <button type="submit" class="btn btn-primary" value="Generate" name="generate">Generate</button>
           </div>
-        </form>
         {% if word2phonemized %}
-        <form action="{{ url_for('interface.text_to_audio')}}" method="POST">
+          <input type="hidden" name="word2phonemized" value='{{ word2phonemized }}'>
           <div class="mt-4">
             <h5>Choose the correct transcription:</h5>
             {% for word, phonemes in word2phonemized.items() %}
@@ -50,16 +49,16 @@
                       {% for phoneme in phonemes %}
                         {% set checked_phoneme = word2picked_phoneme[word] %}
                         <div class="form-check">
-                          <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ phoneme }}" 
+                          <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" 
                                   id="{{ word }}_{{ loop.index }}"
                                 {% if phoneme == checked_phoneme %}checked{% endif %}>
                           <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
                         </div>
                       {% endfor %}
                         <div class="form-check">
-                          <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
+                          <input type="radio" class="form-check-input" name="{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
                                 {% if selected_word == word %}checked{% endif %}>
-                          <input name="selected_phoneme_{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
+                          <input name="{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
                         </div>   
                     </div>
                   </div>
@@ -68,8 +67,8 @@
             {% endfor %}
           </div>
           <div class="button-container">
-            <button type="button" class="btn btn-primary mr-10">Test</button>
-            <button type="submit" class="btn btn-success">Confirm</button>
+            <button type="submit" class="btn btn-primary mr-10" value="Regenerate" name="regenerate">Test</button>
+            <button type="submit" class="btn btn-success" value="Confirm" name="confirm">Confirm</button>
           </div>
         </form>
         {% endif %}
