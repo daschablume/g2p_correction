@@ -25,14 +25,14 @@
       {% endif %}
       <div class="card p-4 mb-4">
         <h3 class="text-center mb-4">G2P Correction</h3>
-        <form action="{{ url_for('interface.text_to_audio') }}" method="POST">
+        <form action="{{ url_for('interface.text_to_audio_view') }}" method="POST">
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (100 characters maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
             <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
             <button type="submit" class="btn btn-primary" value="Generate" name="generate">Generate</button>
           </div>
         {% if word2phonemized %}
-          <input type="hidden" name="word2phonemized" value='{{ word2phonemized }}'>
+          <input type="hidden" name="jsoned_word2phonemized" value='{{ jsoned_word2phonemized }}'>
           <div class="mt-4">
             <div id="loadingOverlay" class="loading-overlay">
               <div class="spinner"></div>
