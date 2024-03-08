@@ -12,7 +12,6 @@ CLEAN = False
 CURRENT_PROFILE_NAME = os.getenv("MFA_PROFILE", "global")
 
 
-
 def get_temporary_directory() -> pathlib.Path:
     """
     Get the root temporary directory for MFA
