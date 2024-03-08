@@ -10,7 +10,7 @@ import pynini
 import pywrapfst
 from rich.pretty import pprint
 
-from mfa_g2p.helpers import mfa_open, EnhancedJSONEncoder
+from .helpers import mfa_open, EnhancedJSONEncoder
 
 FORMAT = "zip"
 

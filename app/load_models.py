@@ -14,7 +14,7 @@ from matcha.hifigan.models import Generator as HiFiGAN
 from matcha.models.matcha_tts import MatchaTTS
 from matcha.utils.utils import get_user_data_dir
 # G2P imports
-from mfa_g2p.generator import PyniniWordListGenerator
+from .mfa_g2p.generator import PyniniWordListGenerator
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MATCHA_CHECKPOINT = get_user_data_dir()/"matcha_ljspeech.ckpt"

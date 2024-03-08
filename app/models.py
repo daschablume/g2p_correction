@@ -1,4 +1,4 @@
-from app import db
+from .app import db
 
 from sqlalchemy import DateTime
 
@@ -12,7 +12,7 @@ class Grapheme(db.Model):
     phoneme = db.Column(db.String, nullable=False)
     
     def __repr__(self):
-        return f'<Grapheme[{self.grapheme}] phoneme={self.phoneme}>'
+        return f'<Grapheme [{self.grapheme}], phoneme={self.phoneme}>'
 
 
 class GraphemeLog(db.Model):
@@ -32,4 +32,4 @@ class GraphemeLog(db.Model):
     to_phoneme = db.Column(db.String, nullable=False)
 
     def __repr__(self):
-        return f'<GraphemeLog [{self.id}] grapheme={self.grapheme}>'
+        return f'<GraphemeLog [{self.id}], grapheme={self.grapheme}>'

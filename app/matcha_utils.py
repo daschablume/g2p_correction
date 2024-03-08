@@ -15,7 +15,8 @@ from matcha.text import sequence_to_text
 from matcha.text.symbols import symbols
 from matcha.utils.utils import intersperse
 
-from load_models import MODEL, VOCODER, DENOISER, DEVICE
+from .load_models import MODEL, VOCODER, DENOISER, DEVICE
+
 HYPERPARAMS = SimpleNamespace(n_timesteps=10, temperature=1.0, length_scale=0.667)
 
 OUTPUT_FOLDER = os.path.join('app', 'static', 'audio')
