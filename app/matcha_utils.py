@@ -2,6 +2,7 @@
 # https://github.com/shivammehta25/Matcha-TTS/blob/256adc55d3219053d2d086db3f9bd9a4bde96fb1/synthesis.ipynb
 
 import datetime as dt
+import os
 from pathlib import Path
 
 import IPython.display as ipd
@@ -17,7 +18,7 @@ from matcha.utils.utils import intersperse
 from load_models import MODEL, VOCODER, DENOISER, DEVICE
 HYPERPARAMS = SimpleNamespace(n_timesteps=10, temperature=1.0, length_scale=0.667)
 
-OUTPUT_FOLDER = "static/audio/"
+OUTPUT_FOLDER = os.path.join('app', 'static', 'audio')
 
 
 def phonemized_to_sequence(phonemized_text):
@@ -122,4 +123,6 @@ def synthesize_matcha_audio(
     print(f"Mean RTF:\t\t\t\t{np.mean(rtfs):.6f} ± {np.std(rtfs):.6f}")
     print(f"Mean RTF Waveform (incl. vocoder):\t{np.mean(rtfs_w):.6f} ± {np.std(rtfs_w):.6f}")
 
-    return output_path
+    print(f"Saved to {output_path}")
+
+    return output_path.relative_to('app/')

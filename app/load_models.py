@@ -19,7 +19,7 @@ from mfa_g2p.generator import PyniniWordListGenerator
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MATCHA_CHECKPOINT = get_user_data_dir()/"matcha_ljspeech.ckpt"
 HIFIGAN_CHECKPOINT = get_user_data_dir() / "hifigan_T2_v1"
-G2P_CHECKPOINT= os.path.join("mfa_g2p", "pretrained_models", "english_us_ipa.zip")
+G2P_CHECKPOINT= os.path.join("app", "mfa_g2p", "pretrained_models", "english_us_ipa.zip")
 
 
 def load_matcha_model(checkpoint_path):
