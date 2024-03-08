@@ -21,14 +21,14 @@ import pywrapfst
 from pynini.lib import rewrite
 from tqdm.rich import tqdm
 
-from config import (
+from mfa_g2p.config import (
     NUM_JOBS, QUIET, USE_MP, DEBUG, CLEAN,
     get_temporary_directory, NUM_JOBS,
     CURRENT_PROFILE_NAME
 )
-from helpers import mfa_open, score_g2p, load_configuration
-from mixins import G2PTopLevelMixin
-from models import G2PModel
+from mfa_g2p.helpers import mfa_open, score_g2p, load_configuration
+from mfa_g2p.mixins import G2PTopLevelMixin
+from mfa_g2p.models import G2PModel
 
 
 Metadict = dict[str, Any]

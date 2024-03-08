@@ -2,7 +2,7 @@ import abc
 from typing import get_type_hints, Union
 from pathlib import Path
 
-from .helpers import mfa_open
+from mfa_g2p.helpers import mfa_open
 
 Metadict = dict[str, any]
 

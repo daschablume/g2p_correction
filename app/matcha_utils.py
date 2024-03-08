@@ -123,6 +123,4 @@ def synthesize_matcha_audio(
     print(f"Mean RTF:\t\t\t\t{np.mean(rtfs):.6f} ± {np.std(rtfs):.6f}")
     print(f"Mean RTF Waveform (incl. vocoder):\t{np.mean(rtfs_w):.6f} ± {np.std(rtfs_w):.6f}")
 
-    print(f"Saved to {output_path}")
-
     return output_path.relative_to('app/')

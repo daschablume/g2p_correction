@@ -2,10 +2,9 @@ from contextlib import contextmanager
 import dataclassy
 import itertools
 import json
+from pathlib import Path
 from typing import Any, Union
 import yaml
-
-from pathlib import Path
 
 import numpy
 
