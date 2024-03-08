@@ -2,3 +2,4 @@
 app/static/audio/
 app/mfa_g2p/__pycache__/
 app/__pycache__
+__pycache__/
