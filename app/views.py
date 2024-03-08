@@ -5,7 +5,7 @@ from flask import render_template, request
 
 from ipa_phonemizer import (
     convert_text_to_phonemized, phonemes_to_string,
-    collapse_whitespaces, get_all_phonemes
+    get_all_phonemes
 )
 from load_models import G2P
 from matcha_utils import synthesize_matcha_audio
@@ -21,10 +21,13 @@ def text_to_audio_view():
                 convert_text_to_phonemized(text, G2P)
             )
             
-        elif form.get('regenerate'):
+        elif form.get('regenerate') or form.get('confirm'):
             word2phonemized = json.loads(form["jsoned_word2phonemized"])
             word2picked_phoneme = get_word2phoneme_from_front(word2phonemized, form)
             phonemized = phonemes_to_string(word2picked_phoneme.values())
+
+        else:
+            raise NotImplementedError
     
         audio = timestamp_audio(synthesize_matcha_audio(text, phonemized))
         jsoned_word2phonemized = json.dumps(word2phonemized, ensure_ascii=False)
@@ -47,8 +50,6 @@ def timestamp_audio(filename):
 
 
 def get_word2phoneme_from_front(word2phonemized, form):
-    print(f'form: {form}')
-    print(f'word2phonemized: {word2phonemized}')
     word2picked_phoneme = {}
     for word in word2phonemized:
         if not word.isalpha():
