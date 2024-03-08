@@ -1,3 +1,4 @@
 **/__pycache__/*.pyc
 **/.DS_Store
 app/static/audio/
+app/mfa_g2p/__pycache__/
