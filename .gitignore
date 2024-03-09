@@ -4,3 +4,4 @@ app/mfa_g2p/__pycache__/
 app/__pycache__
 __pycache__/
 migrations/
+app/app.db
