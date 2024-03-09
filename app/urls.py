@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from .views import text_to_audio_view
+from app.views import text_to_audio_view
 
 interface = Blueprint('interface', __name__)
 

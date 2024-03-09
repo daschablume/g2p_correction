@@ -1,7 +1,7 @@
 from collections import defaultdict
 import re
 
-from .mfa_g2p.generator import PyniniWordListGenerator
+from app.mfa_g2p.generator import PyniniWordListGenerator
 
 PUNCTUATION_STR = r"[!,.\"#$%&\(\)*+:;<=>?@^_`\{|\}~]"
 PUNCT_PATTERN = re.compile(r"\s+(?=" + PUNCTUATION_STR + ")")

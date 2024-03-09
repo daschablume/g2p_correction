@@ -1,5 +1,5 @@
-from .app import db
-from .models import Grapheme, GraphemeLog
+from app import db
+from app.models import Grapheme, GraphemeLog
 
 
 def add_graphemes_and_log(grapheme2phoneme: dict[str, str]):

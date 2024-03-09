@@ -3,13 +3,13 @@ import time
 
 from flask import render_template, request
 
-from .ipa_phonemizer import (
+from app.ipa_phonemizer import (
     convert_text_to_phonemized, phonemes_to_string,
     get_all_phonemes
 )
-#from .db_utils import add_graphemes_and_log, fetch_grapheme2phoneme
-from .load_models import G2P
-from .matcha_utils import synthesize_matcha_audio
+#from app.db_utils import add_graphemes_and_log, fetch_grapheme2phoneme
+from app.load_models import G2P
+from app.matcha_utils import synthesize_matcha_audio
 
 
 def text_to_audio_view():
