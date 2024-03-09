@@ -10,6 +10,11 @@ class Grapheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     grapheme = db.Column(db.String, nullable=False, unique=True)
     phoneme = db.Column(db.String, nullable=False)
+
+    __table_args__ = (
+        db.Index('grapheme_table_grapheme_index', grapheme),
+    )
+
     
     def __repr__(self):
         return f'Grapheme: <{self.grapheme}>, phoneme=[{self.phoneme}]'
@@ -30,6 +35,10 @@ class GraphemeLog(db.Model):
   )
     from_phoneme = db.Column(db.String, nullable=True)
     to_phoneme = db.Column(db.String, nullable=False)
+
+    __table_args__ = (
+        db.Index('grapheme_log_grapheme_name_index', grapheme_name),
+    )
 
     def __repr__(self):
         return f'GraphemeLog: id=[{self.id}], grapheme={self.grapheme}'
