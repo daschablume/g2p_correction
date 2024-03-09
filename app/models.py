@@ -12,7 +12,7 @@ class Grapheme(db.Model):
     phoneme = db.Column(db.String, nullable=False)
     
     def __repr__(self):
-        return f'<Grapheme [{self.grapheme}], phoneme={self.phoneme}>'
+        return f'Grapheme: <{self.grapheme}>, phoneme=[{self.phoneme}]'
 
 
 class GraphemeLog(db.Model):
@@ -28,8 +28,8 @@ class GraphemeLog(db.Model):
         DateTime, nullable=False, default=datetime.utcnow,
         onupdate=datetime.utcnow
   )
-    from_phoneme = db.Column(db.String, nullable=False)
+    from_phoneme = db.Column(db.String, nullable=True)
     to_phoneme = db.Column(db.String, nullable=False)
 
     def __repr__(self):
-        return f'<GraphemeLog [{self.id}], grapheme={self.grapheme}>'
+        return f'GraphemeLog: id=[{self.id}], grapheme={self.grapheme}'

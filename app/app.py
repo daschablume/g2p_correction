@@ -14,6 +14,9 @@ migrate = Migrate(app, db)
 
 app.register_blueprint(interface)
 
+# for sqlalchemy to work with flask
+app.app_context().push()
+
 from . import models
 
 

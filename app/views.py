@@ -7,6 +7,7 @@ from .ipa_phonemizer import (
     convert_text_to_phonemized, phonemes_to_string,
     get_all_phonemes
 )
+#from .db_utils import add_graphemes_and_log, fetch_grapheme2phoneme
 from .load_models import G2P
 from .matcha_utils import synthesize_matcha_audio
 
@@ -22,6 +23,8 @@ def text_to_audio_view():
             )
             
         elif form.get('regenerate') or form.get('confirm'):
+            print(form)
+            # HERE
             word2phonemized = json.loads(form["jsoned_word2phonemized"])
             word2picked_phoneme = get_word2phoneme_from_front(word2phonemized, form)
             phonemized = phonemes_to_string(word2picked_phoneme.values())
