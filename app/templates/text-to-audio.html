@@ -33,6 +33,7 @@
           </div>
         {% if word2phonemes %}
           <input type="hidden" name="jsoned_word2phonemes" value='{{ jsoned_word2phonemes }}'>
+          <input type="hidden" name="jsoned_word2model_phonemes" value='{{ jsoned_word2model_phonemes }}'>
           <div class="mt-4">
             <div id="loadingOverlay" class="loading-overlay">
               <div class="spinner"></div>
@@ -40,12 +41,14 @@
             <h5>Choose the phoneme considered to be wrong:</h5>
             {% for word, phonemes in word2phonemes.items() %}
               {% if word.isalpha() %}
+                {% set db_phoneme = word2db_phoneme[word] %}
+                {% set phonemes_from_model = word2model_phonemes[word] %}
                 <div class="card mb-3">
                   <div class="card-header" onclick="toggleVariations('{{ word }}')">
                     <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
                       <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
                     </button>
-                    {{ word }}
+                    {{ word }}{% if word in word2db_phoneme %} * {% endif %} {# TODO: change the style #}
                   </div>
                   <div class="card-body" id="{{ word }}_variations" style="display: none;">
                     <div class="form-check">
@@ -56,7 +59,22 @@
                                   id="{{ word }}_{{ loop.index }}"
                                   {% if phoneme == checked_phoneme %}checked{% endif %}
                           >
-                          <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
+                          <label class="form-check-label" 
+                                {% if phoneme == db_phoneme %} 
+                                  style="color: #006400"
+                                {% elif phoneme not in phonemes_from_model %} 
+                                  style="color: #1900ff"
+                                {% endif %}
+                                for="{{ word }}_{{ loop.index }}" 
+                                onclick="playAudio('{{audio}}', '{{word}}')"
+                          >
+                            {{ phoneme }} 
+                              {% if phoneme == db_phoneme %} 
+                                (saved) 
+                              {% elif phoneme not in phonemes_from_model %} 
+                                (from form)
+                              {% endif %}
+                          </label>
                         </div>
                       {% endfor %}
                         <div class="form-check">

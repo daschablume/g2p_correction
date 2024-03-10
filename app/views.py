@@ -1,11 +1,12 @@
 import json
 import time
 
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 
 from app.ipa_phonemizer import (
-    phonemize_text, get_grapheme2phonemes_from_model,
-    enrich_model_phonemes_with_db, phonemes_to_string
+    phonemize, get_grapheme2phonemes_from_model,
+    enrich_model_phonemes_with_db, phonemes_to_string,
+    tokenize
 )
 from app.matcha_utils import synthesize_matcha_audio
 
@@ -13,19 +14,27 @@ from app.matcha_utils import synthesize_matcha_audio
 def text_to_audio_view():
     # import here, otherwise circular import
     from app import db
-    from app.db_utils import add_graphemes_and_log
+    from app.db_utils import add_graphemes_and_log, fetch_grapheme2phoneme
 
     if request.method == 'POST':
         form = request.form
         text = form['text']
+        words = tokenize(text)
 
         if form.get('generate'):
-            word2phonemes, word2picked_phoneme, phonemized_str = phonemize_text(text)
+            word2db_phoneme = fetch_grapheme2phoneme(words)
+            word2model_phonemes = get_grapheme2phonemes_from_model(words)
+            word2phonemes, word2picked_phoneme, phonemized_str = (
+                phonemize(word2model_phonemes, word2db_phoneme)
+            )
             
         elif form.get('regenerate') or form.get('confirm'):
-            # todo: it would be nice to show to a user "saved" 
+            # TODO: it would be nice to show to a user "saved"
+            # TODO: handle situation with the wrong input from the user
+            word2model_phonemes = json.loads(form['jsoned_word2model_phonemes'])
             word2phonemes = json.loads(form["jsoned_word2phonemes"])
-            word2phonemes, word2picked_phoneme = pick_phoneme_from_form(word2phonemes, form)
+            word2phonemes, word2picked_phoneme = pick_phoneme_from_form(
+                word2phonemes, form)
             phonemized_str = phonemes_to_string(word2picked_phoneme.values())
 
             if form.get('confirm'):
@@ -36,19 +45,26 @@ def text_to_audio_view():
                     # TODO: show the error to the user
                     db.session.rollback()
                     print(e)
+                    return redirect(url_for('interface.text_to_audio_view'))
+            
+            # fetch db phonemes after saving them to db
+            word2db_phoneme = fetch_grapheme2phoneme(words)
 
         else:
             raise NotImplementedError
 
         audio = timestamp_audio(synthesize_matcha_audio(text, phonemized_str))
-        jsoned_word2phonemes = json.dumps(word2phonemes, ensure_ascii=False)
 
         return render_template(
-                'text-to-audio.html', audio=audio,
-                text=text, word2phonemes=word2phonemes,
-                word2picked_phoneme=word2picked_phoneme,
-                jsoned_word2phonemes=jsoned_word2phonemes,
-            )
+            'text-to-audio.html', audio=audio,
+            text=text, word2phonemes=word2phonemes,
+            word2picked_phoneme=word2picked_phoneme,
+            jsoned_word2phonemes=json.dumps(word2phonemes, ensure_ascii=False),
+            word2db_phoneme=word2db_phoneme,
+            word2model_phonemes=word2model_phonemes,
+            jsoned_word2model_phonemes = json.dumps(
+                word2model_phonemes, ensure_ascii=False),
+        )
 
     return render_template('text-to-audio.html')
 
@@ -61,6 +77,8 @@ def timestamp_audio(filename):
 
 
 def pick_phoneme_from_form(word2phonemes, form):
+    from app.db_utils import fetch_grapheme2phoneme
+
     word2picked_phoneme = {}
     for word, all_phonemes in word2phonemes.items() :
         if not word.isalpha():
@@ -78,14 +96,20 @@ def pick_phoneme_from_form(word2phonemes, form):
                 # 2. enrich the model phonemes with the db phonemes
                 # 3. pick the phoneme
                 # 4. extend the word2phonemes with the new phonemes
-            orthograpic2phonemes = get_grapheme2phonemes_from_model(orthograpic)
+            orthograpic2model_phonemes = get_grapheme2phonemes_from_model(
+                [orthograpic])
+            orthograpic2db_phoneme = fetch_grapheme2phoneme([orthograpic])
             orthograpic2phonemes, orthograpic2picked_phoneme = (
-                enrich_model_phonemes_with_db(orthograpic2phonemes))
-            new_phonemes = orthograpic2phonemes[orthograpic]
-            new_phonemes = [ph for ph in new_phonemes if ph not in all_phonemes]
+                enrich_model_phonemes_with_db(
+                    orthograpic2model_phonemes,
+                    orthograpic2db_phoneme))
+            new_phonemes = [
+                phoneme 
+                for phoneme in orthograpic2phonemes[orthograpic] 
+                if phoneme not in all_phonemes
+            ]
             picked_phoneme = orthograpic2picked_phoneme[orthograpic]
             word2picked_phoneme[word] = picked_phoneme
             word2phonemes[word].extend(new_phonemes)
     
-    return word2phonemes, word2picked_phoneme
-
+    return word2phonemes, word2picked_phoneme   
