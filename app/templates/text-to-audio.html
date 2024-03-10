@@ -19,7 +19,12 @@
               if (audioPlayer) {
                   audioPlayer.play()
                   .catch(error => console.error("Audio play failed:", error));
-              }
+                }
+              if (audioPlayer) {
+                    audioPlayer.onended = function() {
+                        document.getElementById('listenAgainBtn').style.display = 'inline-block';
+                };
+                }
           });
           </script>
       {% endif %}
@@ -30,6 +35,9 @@
             <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (100 characters maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
             <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
             <button type="submit" class="btn btn-primary" value="Generate" name="generate">Generate</button>
+            <button type="button" class="btn btn-info ml-2" id="listenAgainBtn" style="display: none;" onclick="listenAgain()">
+                <img src="../static/icons/ear.svg" alt="Listen Again" style="width: 16px; height: 16px;">
+            </button>
           </div>
         {% if word2phonemized %}
           <input type="hidden" name="jsoned_word2phonemized" value='{{ jsoned_word2phonemized }}'>
@@ -42,8 +50,8 @@
               {% if word.isalpha() %}
                 <div class="card mb-3">
                   <div class="card-header" onclick="toggleVariations('{{ word }}')">
-                    <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
-                      <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
+                    <button type="button" class="btn btn-link" onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
+                      <img onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')" src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
                     </button>
                     {{ word }}
                   </div>
@@ -112,7 +120,26 @@
 
   function clearInput() {
     document.getElementById('inputText').value = '';
+    document.getElementById('listenAgainBtn').style.display = 'none'; // hide listen again icon
   }
+
+  function listenAgain() {
+        var audioPlayer = document.getElementById('audioPlayer');
+        if (audioPlayer) {
+            audioPlayer.currentTime = 0;
+            audioPlayer.play()
+            .catch(error => console.error("Audio play failed:", error));
+        }
+    }
+
+  document.addEventListener('DOMContentLoaded', function() {
+        var audioPlayer = document.getElementById('audioPlayer');
+        if (audioPlayer) {
+            audioPlayer.onended = function() {
+                document.getElementById('listenAgainBtn').style.display = 'inline-block';
+            };
+        }
+    });
 </script>
 
 {% endblock %}
