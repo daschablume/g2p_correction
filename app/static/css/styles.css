@@ -114,9 +114,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8); /* 半透明白色背景 */
-    z-index: 1000; /* 确保遮罩层位于其他内容之上 */
-    display: none; /* 默认隐藏 */
+    background-color: rgba(255, 255, 255, 0.8); 
+    z-index: 1000; 
+    display: none; 
 }
 
 .spinner {
@@ -124,12 +124,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border: 4px solid #f3f3f3; /* 灰色边框 */
-    border-top: 4px solid #3498db; /* 蓝色边框，可以根据需求修改颜色 */
+    border: 4px solid #f3f3f3; 
+    border-top: 4px solid #3498db; 
     border-radius: 50%;
     width: 30px;
     height: 30px;
-    animation: spin 1s linear infinite; /* 定义旋转动画 */
+    animation: spin 1s linear infinite; 
 }
 @keyframes spin {
     0% { transform: rotate(0deg); }
