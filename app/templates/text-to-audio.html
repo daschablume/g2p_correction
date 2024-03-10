@@ -66,11 +66,13 @@
                           <label class="form-check-label" for="{{ word }}_{{ loop.index }}" onclick="playAudio('{{audio}}', '{{word}}')">{{ phoneme }}</label>
                         </div>
                       {% endfor %}
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" name="{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
-                                {% if selected_word == word %}checked{% endif %}>
-                          <input name="{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
-                        </div>   
+                      <div class="form-check">
+                        <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ loop.index }}">
+                        <label class="form-check-label" for="{{ loop.index }}">
+                            <input onclick="selectRadio('{{loop.index}}')" name="selected_phoneme_{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
+                        </label>
+                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -130,6 +132,10 @@
             audioPlayer.play()
             .catch(error => console.error("Audio play failed:", error));
         }
+    }
+    
+    function selectRadio(index) {
+        document.getElementById(index).checked = true;
     }
 </script>
 
