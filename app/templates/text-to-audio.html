@@ -5,6 +5,11 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+</div>
+
 <div class="container-fluid">
   <div class="row justify-content-center align-items-center min-vh-100">
     <div class="col-md-8">
@@ -15,11 +20,23 @@
         </audio>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-              var audioPlayer = document.getElementById('audioPlayer');
+                var audioPlayer = document.getElementById('audioPlayer');
+                    document.getElementById('loadingOverlay').style.display = 'flex';
+                        if (audioPlayer) {
+                            audioPlayer.play().then(function() {
+                                document.getElementById('loadingOverlay').style.display = 'none';
+                            })
+                            .catch(function(error) {
+                                console.error("Audio play failed:", error);
+                                // Hide loading overlay on error
+                                document.getElementById('loadingOverlay').style.display = 'none';
+                            });
+                }
               if (audioPlayer) {
-                  audioPlayer.play()
-                  .catch(error => console.error("Audio play failed:", error));
-              }
+                    audioPlayer.onended = function() {
+                        document.getElementById('listenAgainBtn').style.display = 'inline-block';
+                };
+                }
           });
           </script>
       {% endif %}
@@ -30,14 +47,14 @@
             <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (100 characters maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
             <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
             <button type="submit" class="btn btn-primary" value="Generate" name="generate">Generate</button>
+            <button type="button" class="btn btn-info ml-2" id="listenAgainBtn" style="display: none;" onclick="listenAgain()">
+                <img src="../static/icons/ear.svg" alt="Listen Again" style="width: 16px; height: 16px;">
+            </button>
           </div>
         {% if word2phonemes %}
           <input type="hidden" name="jsoned_word2phonemes" value='{{ jsoned_word2phonemes }}'>
           <input type="hidden" name="jsoned_word2model_phonemes" value='{{ jsoned_word2model_phonemes }}'>
           <div class="mt-4">
-            <div id="loadingOverlay" class="loading-overlay">
-              <div class="spinner"></div>
-            </div>
             <h5>Choose the phoneme considered to be wrong:</h5>
             {% for word, phonemes in word2phonemes.items() %}
               {% if word.isalpha() %}
@@ -45,8 +62,8 @@
                 {% set phonemes_from_model = word2model_phonemes[word] %}
                 <div class="card mb-3">
                   <div class="card-header" onclick="toggleVariations('{{ word }}')">
-                    <button type="button" class="btn btn-link" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
-                      <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
+                    <button type="button" class="btn btn-link" onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
+                      <img onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')" src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
                     </button>
                     {{ word }}{% if word in word2db_phoneme %} * {% endif %} {# TODO: change the style #}
                   </div>
@@ -77,11 +94,12 @@
                           </label>
                         </div>
                       {% endfor %}
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" name="{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
-                                {% if selected_word == word %}checked{% endif %}>
-                          <input name="{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
-                        </div>   
+                      <div class="form-check">
+                        <input type="radio" class="form-check-input" name="{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
+                              {% if selected_word == word %}checked{% endif %}>
+                        <input name="{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
+                      </div> 
+
                     </div>
                   </div>
                 </div>
@@ -131,7 +149,21 @@
 
   function clearInput() {
     document.getElementById('inputText').value = '';
+    document.getElementById('listenAgainBtn').style.display = 'none'; // hide listen again icon
   }
+
+  function listenAgain() {
+        var audioPlayer = document.getElementById('audioPlayer');
+        if (audioPlayer) {
+            audioPlayer.currentTime = 0;
+            audioPlayer.play()
+            .catch(error => console.error("Audio play failed:", error));
+        }
+    }
+    
+    function selectRadio(index) {
+        document.getElementById(index).checked = true;
+    }
 </script>
 
 {% endblock %}
