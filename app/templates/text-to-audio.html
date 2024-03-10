@@ -131,15 +131,6 @@
             .catch(error => console.error("Audio play failed:", error));
         }
     }
-
-  document.addEventListener('DOMContentLoaded', function() {
-        var audioPlayer = document.getElementById('audioPlayer');
-        if (audioPlayer) {
-            audioPlayer.onended = function() {
-                document.getElementById('listenAgainBtn').style.display = 'inline-block';
-            };
-        }
-    });
 </script>
 
 {% endblock %}
