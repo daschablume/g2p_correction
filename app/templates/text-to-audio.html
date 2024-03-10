@@ -76,7 +76,7 @@
                         </div>
                       {% endfor %}
                       <div class="form-check">
-                        <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ word }}" id="{{ loop.index }}">
+                        <input type="radio" class="form-check-input" name="selected_word_{{ word }}" value="{{ phoneme }}" id="{{ loop.index }}">
                         <label class="form-check-label" for="{{ loop.index }}">
                             <input onclick="selectRadio('{{loop.index}}')" name="selected_phoneme_{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
                         </label>
