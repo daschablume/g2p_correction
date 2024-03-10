@@ -5,6 +5,11 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+</div>
+
 <div class="container-fluid">
   <div class="row justify-content-center align-items-center min-vh-100">
     <div class="col-md-8">
@@ -15,10 +20,17 @@
         </audio>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-              var audioPlayer = document.getElementById('audioPlayer');
-              if (audioPlayer) {
-                  audioPlayer.play()
-                  .catch(error => console.error("Audio play failed:", error));
+                var audioPlayer = document.getElementById('audioPlayer');
+                    document.getElementById('loadingOverlay').style.display = 'flex';
+                        if (audioPlayer) {
+                            audioPlayer.play().then(function() {
+                                document.getElementById('loadingOverlay').style.display = 'none';
+                            })
+                            .catch(function(error) {
+                                console.error("Audio play failed:", error);
+                                // Hide loading overlay on error
+                                document.getElementById('loadingOverlay').style.display = 'none';
+                            });
                 }
               if (audioPlayer) {
                     audioPlayer.onended = function() {
@@ -42,9 +54,6 @@
         {% if word2phonemized %}
           <input type="hidden" name="jsoned_word2phonemized" value='{{ jsoned_word2phonemized }}'>
           <div class="mt-4">
-            <div id="loadingOverlay" class="loading-overlay">
-              <div class="spinner"></div>
-            </div>
             <h5>Choose the phoneme considered to be wrong:</h5>
             {% for word, phonemes in word2phonemized.items() %}
               {% if word.isalpha() %}
@@ -72,7 +81,7 @@
                             <input onclick="selectRadio('{{loop.index}}')" name="selected_phoneme_{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
                         </label>
                       </div>
-                      
+
                     </div>
                   </div>
                 </div>
