@@ -203,8 +203,6 @@
             popup.style.top = topOffset + 'px';
             popup.style.left = leftOffset + 'px';
             popup.style.display = 'block';
-            console.log(inputRect.top);
-            console.log(inputRect.right);
         } else {
             hideIPAPopup();
         }
@@ -223,7 +221,6 @@
     function insertIPA(ipaChar, index) {
         var inputField = document.getElementById("input_" + index);
         inputField.value = inputField.value.slice(0, -1) + ipaChar; 
-        console.log(inputField.value);
         hideIPAPopup(); 
     }
 
