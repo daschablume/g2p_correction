@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "phoneme_input.html" import display_phoneme_input %}
+
 {% block title %}G2P Correction{% endblock %}
 
 {% block content %}
@@ -18,28 +20,28 @@
     <div class="col-md-8">
       {% if audio %}
         <audio id="audioPlayer" style="display:none;">
-            <source src="{{ audio }}" type="audio/wav">
-            Your browser does not support the audio element.
+          <source src="{{ audio }}" type="audio/wav">
+          Your browser does not support the audio element.
         </audio>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-                var audioPlayer = document.getElementById('audioPlayer');
-                    document.getElementById('loadingOverlay').style.display = 'flex';
-                        if (audioPlayer) {
-                            audioPlayer.play().then(function() {
-                                document.getElementById('loadingOverlay').style.display = 'none';
-                            })
-                            .catch(function(error) {
-                                console.error("Audio play failed:", error);
-                                // Hide loading overlay on error
-                                document.getElementById('loadingOverlay').style.display = 'none';
-                            });
+            var audioPlayer = document.getElementById('audioPlayer');
+              document.getElementById('loadingOverlay').style.display = 'flex';
+                if (audioPlayer) {
+                  audioPlayer.play().then(function() {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                  })
+                  .catch(function(error) {
+                    console.error("Audio play failed:", error);
+                    // Hide loading overlay on error
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                  });
                 }
               if (audioPlayer) {
-                    audioPlayer.onended = function() {
-                        document.getElementById('listenAgainBtn').style.display = 'inline-block';
+                audioPlayer.onended = function() {
+                  document.getElementById('listenAgainBtn').style.display = 'inline-block';
                 };
-                }
+              }
           });
           </script>
       {% endif %}
@@ -63,6 +65,7 @@
               {% if word.isalpha() %}
                 {% set db_phoneme = word2db_phoneme[word] %}
                 {% set phonemes_from_model = word2model_phonemes[word] %}
+                {% set checked_phoneme = word2picked_phoneme[word] %}
                 <div class="card mb-3">
                   <div class="card-header" onclick="toggleVariations('{{ word }}')">
                     <button type="button" class="btn btn-link" onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
@@ -72,32 +75,26 @@
                   </div>
                   <div class="card-body" id="{{ word }}_variations" style="display: none;">
                     <div class="form-check">
-                      {% for phoneme in phonemes %}
-                        {% set checked_phoneme = word2picked_phoneme[word] %}
-                        <div class="form-check">
-                          <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" 
-                                  id="{{ word }}_{{ loop.index }}"
-                                  {% if phoneme == checked_phoneme %}checked{% endif %}
-                          >
-                          <label class="form-check-label" 
-                                {% if phoneme == db_phoneme %} 
-                                  style="color: #006400"
-                                {% elif phoneme not in phonemes_from_model %} 
-                                  style="color: #1900ff"
-                                {% endif %}
-                                for="{{ word }}_{{ loop.index }}" 
-                                onclick="playAudio('{{audio}}', '{{word}}')"
-                          >
-                            {{ phoneme }} 
-                              {% if phoneme == db_phoneme %} 
-                                (saved)
-                              {% endif %}
-                          </label>
-                        </div>
+                      {% if db_phoneme %}
+                        {{ display_phoneme_input(
+                          word, db_phoneme,
+                          index=0, 
+                          checked=True,
+                          db_phoneme=True,
+                          )
+                        }}
+                      {% endif %}
+                      {% for phoneme in phonemes if phoneme != db_phoneme %}
+                        {{ display_phoneme_input(
+                          word, phoneme,
+                          index=loop.index, 
+                          checked=phoneme==checked_phoneme,
+                          db_phoneme=False,
+                          from_form=phoneme not in phonemes_from_model) 
+                        }}
                       {% endfor %}
                       <div class="form-check">
-                        <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" id="{{ word }}_{{ loop.index }}"
-                              {% if selected_word == word %}checked{% endif %}>
+                        <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" id="{{ word }}_{{ loop.index }}">
                         <input name="{{ word }}" placeholder="Provide your own" id="input_{{ loop.index }}" autocomplete="off" onkeyup="showIPAPopup(event, '{{loop.index}}')">
                         <input type="checkbox" id="checkbox_{{loop.index}}" name="ipa_{{ word }}"> 
                         <label for="checkbox_{{loop.index}}">IPA?</label> 

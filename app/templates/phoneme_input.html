@@ -1,0 +1,19 @@
+{% macro display_phoneme_input(word, phoneme, index, checked, db_phoneme, from_form=False) %}
+  <div class="form-check">
+    <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" 
+        id="{{ word }}_{{ index }}"
+        {% if checked %}checked{% endif %}
+    >
+    <label class="form-check-label" 
+        for="{{ word }}_{{ index }}" 
+        {# onclick="playAudio('{{audio}}', '{{word}}')" #}
+        {% if db_phoneme %} 
+          style="color: #006400"
+        {% elif from_form %} 
+          style="color: #1900ff"
+        {% endif %}     
+    >
+      {{ phoneme }} {% if db_phoneme %} (saved) {% endif %}
+    </label>
+  </div>
+{% endmacro %}

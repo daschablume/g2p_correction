@@ -95,7 +95,7 @@ def pick_phoneme_from_form(word2phonemes, form):
         else:
             # if the phoneme is orthographic:
                 # 1. get the phonemes from the model
-                # 2. enrich the model phonemes with the db phonemes
+                # 2. enrich the model phonemes with db phonemes
                 # 3. pick the phoneme
                 # 4. extend the word2phonemes with the new phonemes
             ipa_input = f'ipa_{word}'
