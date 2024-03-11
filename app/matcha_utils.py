@@ -15,7 +15,7 @@ from matcha.text import sequence_to_text
 from matcha.text.symbols import symbols
 from matcha.utils.utils import intersperse
 
-from app.load_models import MODEL, VOCODER, DENOISER, DEVICE
+from app.load_models import MATCHA_MODEL, VOCODER, DENOISER, DEVICE
 
 HYPERPARAMS = SimpleNamespace(n_timesteps=10, temperature=1.0, length_scale=0.667)
 
@@ -96,7 +96,7 @@ def save_to_folder(filename: str, output: dict, folder: str):
 
 def synthesize_matcha_audio(
         text: str, phonemized: str, 
-        model=MODEL, vocoder=VOCODER, denoiser=DENOISER, 
+        model=MATCHA_MODEL, vocoder=VOCODER, denoiser=DENOISER, 
         hyperparams=HYPERPARAMS
 ):
     output_folder = OUTPUT_FOLDER

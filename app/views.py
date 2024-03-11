@@ -18,6 +18,8 @@ def text_to_audio_view():
 
     if request.method == 'POST':
         form = request.form
+        print(80*'=')
+        print(form)
         text = form['text']
         words = tokenize(text)
 
@@ -85,10 +87,10 @@ def pick_phoneme_from_form(word2phonemes, form):
             continue
         # form phonemes: radio input -- either picked or orthographic
         form_phonemes = form.getlist(word)
-        picked, orthograpic = form_phonemes
+        picked, manual_input = form_phonemes
         # manual for now is orthographic only!
         # there is no any validation here!
-        if not orthograpic:          
+        if not manual_input:          
             word2picked_phoneme[word] = picked
         else:
             # if the phoneme is orthographic:
@@ -96,20 +98,26 @@ def pick_phoneme_from_form(word2phonemes, form):
                 # 2. enrich the model phonemes with the db phonemes
                 # 3. pick the phoneme
                 # 4. extend the word2phonemes with the new phonemes
-            orthograpic2model_phonemes = get_grapheme2phonemes_from_model(
-                [orthograpic])
-            orthograpic2db_phoneme = fetch_grapheme2phoneme([orthograpic])
-            orthograpic2phonemes, orthograpic2picked_phoneme = (
-                enrich_model_phonemes_with_db(
-                    orthograpic2model_phonemes,
-                    orthograpic2db_phoneme))
-            new_phonemes = [
-                phoneme 
-                for phoneme in orthograpic2phonemes[orthograpic] 
-                if phoneme not in all_phonemes
-            ]
-            picked_phoneme = orthograpic2picked_phoneme[orthograpic]
-            word2picked_phoneme[word] = picked_phoneme
-            word2phonemes[word].extend(new_phonemes)
+            ipa_input = f'ipa_{word}'
+            if form.get(ipa_input):
+                word2picked_phoneme[word] = manual_input
+                word2phonemes[word].append(manual_input)
+            else:
+                orthograpic = manual_input
+                orthograpic2model_phonemes = get_grapheme2phonemes_from_model(
+                    [orthograpic])
+                orthograpic2db_phoneme = fetch_grapheme2phoneme([orthograpic])
+                orthograpic2phonemes, orthograpic2picked_phoneme = (
+                    enrich_model_phonemes_with_db(
+                        orthograpic2model_phonemes,
+                        orthograpic2db_phoneme))
+                new_phonemes = [
+                    phoneme 
+                    for phoneme in orthograpic2phonemes[orthograpic] 
+                    if phoneme not in all_phonemes
+                ]
+                picked_phoneme = orthograpic2picked_phoneme[orthograpic]
+                word2picked_phoneme[word] = picked_phoneme
+                word2phonemes[word].extend(new_phonemes)
     
     return word2phonemes, word2picked_phoneme   

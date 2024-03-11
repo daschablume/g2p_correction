@@ -58,5 +58,5 @@ def load_matcha():
     return model, vocoder, denoiser
 
 
-MODEL, VOCODER, DENOISER = load_matcha()
+MATCHA_MODEL, VOCODER, DENOISER = load_matcha()
 G2P = load_g2p()

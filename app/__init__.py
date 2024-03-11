@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 from app.config import Config
-from app.load_models import MODEL, VOCODER, DENOISER, G2P
+from app.load_models import G2P, MATCHA_MODEL, VOCODER, DENOISER
 from app.urls import interface
 
 
