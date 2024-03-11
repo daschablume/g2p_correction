@@ -2,14 +2,17 @@
 
 
 1. How to install:
-  (was tested on Mac)
+  (was tested on Mac Mojave)
 
-  0) load this repo
-  1) create virtuatual environment with python>=3.9 and activate it
-  2) run this command there
-     python3 -m pip install -r requirements.txt
-  3) FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"
-     export FLASK_APP
+  0) download this repo
+  1) ensure you have conda and add the conda-forge channel to your Conda configuration
+    conda config --add channels conda-forge
+  2) create virtuatual environment with python>=3.9 and activate it
+      conda create -n g2p_env
+  3) conda activate g2p_env
+  4) install requirements using conda
+     conda install --file requirements.txt
+  5) export FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"
   4) cd YOU_ABSOLUTE_PATH/g2p_correction
   6) flask run
   

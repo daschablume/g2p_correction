@@ -708,17 +708,10 @@ class TopLevelMfaWorker(MfaWorker, TemporaryDirectoryMixin, metaclass=abc.ABCMet
         ----------
         conf: dict[str, Any]
             Previous run's configuration
-        """
-        from montreal_forced_aligner.utils import get_mfa_version
 
-        self.dirty = False
-        current_version = get_mfa_version()
-        if not DEBUG and conf.get("version", current_version) != current_version:
-            # logger was removed!
-            print(
-                f"Previous run was on {conf['version']} version (new run: {current_version})"
-            )
-            self.dirty = True
+        Caution: was removed!
+        """
+        
 
     def check_previous_run(self) -> None:
         """
