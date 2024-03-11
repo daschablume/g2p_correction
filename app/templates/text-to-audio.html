@@ -182,7 +182,10 @@
         document.getElementById(index).checked = true;
     }
 
+    var ipaPopupOpen = false;
+
     function showIPAPopup(event, index) {
+        ipaPopupOpen = true;
         var inputChar = event.target.value.slice(-1);   // get the last input character
         var ipaOptions = ipaMapping[inputChar];         // get the mapping options
         if (ipaOptions && ipaOptions.length > 0) {
@@ -209,8 +212,31 @@
             popup.style.top = topOffset + 'px';
             popup.style.left = leftOffset + 'px';
             popup.style.display = 'block';
+            if (ipaPopupOpen) {
+                // Add event listener for TAB key press
+                document.addEventListener('keydown', tabKeyHandler)
+            }
         } else {
             hideIPAPopup();
+        }
+    }
+    
+    function tabKeyHandler(event) {
+        if (event.key === 'Tab') {
+            // If IPA popup is visible, focus on the first button in the popup
+            if (document.getElementById('ipaPopup').style.display === 'block') {
+                event.preventDefault(); // Prevent default TAB behavior
+                // Get all buttons in the IPA popup
+                var buttons = document.querySelectorAll('#ipaPopup button');
+                var focusedButton = document.activeElement;
+                var index = Array.from(buttons).indexOf(focusedButton);
+                // If no button is focused or the focused button is the last one, focus on the first button
+                if (index === -1 || index === buttons.length - 1) {
+                    buttons[0].focus();
+                } else { // Focus on the next button
+                    buttons[index + 1].focus();
+                }
+            }
         }
     }
     // Function to get the caret position in the input field
@@ -227,11 +253,13 @@
     function insertIPA(ipaChar, index) {
         var inputField = document.getElementById("input_" + index);
         inputField.value = inputField.value.slice(0, -1) + ipaChar; 
+        inputField.focus();
         hideIPAPopup(); 
     }
 
     function hideIPAPopup() {
         document.getElementById('ipaPopup').style.display = 'none';
+        ipaPopupOpen = false;
     }
 </script>
 
