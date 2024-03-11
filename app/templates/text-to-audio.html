@@ -10,6 +10,9 @@
     <div class="spinner"></div>
 </div>
 
+<!-- IPA Character Popup -->
+<div id="ipaPopup" class="ipa-popup" style="display: none;"></div>
+
 <div class="container-fluid">
   <div class="row justify-content-center align-items-center min-vh-100">
     <div class="col-md-8">
@@ -97,7 +100,7 @@
                       <div class="form-check">
                         <input type="radio" class="form-check-input" name="{{ word }}" value="{{ word }}" id="{{ word }}_{{ loop.index }}"
                               {% if selected_word == word %}checked{% endif %}>
-                        <input name="{{ word }}" value="{{ phoneme }}" placeholder="Provide your own">
+                        <input name="{{ word }}" value="{{ phoneme }}" placeholder="Provide your own" id="input_{{ loop.index }}" onkeyup="showIPAPopup(event, '{{loop.index}}')">
                       </div> 
 
                     </div>
@@ -118,6 +121,33 @@
 </div>
 
 <script>
+      // IPA Characters Mapping
+      const ipaMapping = {
+        'a': ['ɑ', 'æ', 'ɐ'], 
+        'b': ['b', 'β', 'ɓ'],
+        'c': ['c', 'ɕ', 'ç'],
+        'd': ['d', 'ð', 'ɖ', 'ɗ'],
+        'e': ['e', 'ə', 'ɚ', 'ɵ', 'ɘ'],
+        'g': ['g', 'ɠ', 'ɢ', 'ʛ'],
+        'h': ['h', 'ɥ', 'ɦ', 'ħ', 'ɧ', 'ʜ'],
+        'i': ['i', 'ɪ', 'ɨ'],
+        'j': ['j', 'ʝ', 'ɟ', 'ʄ'],
+        'l': ['l', 'ɫ', 'ɬ', 'ʟ', 'ɮ'],
+        'm': ['m', 'ɱ'],
+        'n': ['n', 'ŋ', 'ɲ', 'ɳ', 'ɴ'],
+        'o': ['o', 'ɔ', 'œ', 'ɒ', 'ø', 'ɶ'],
+        'p': ['p', 'ɸ'],
+        'r': ['r', 'ɾ', 'ɹ', 'ʁ', 'ʀ', 'ɻ', 'ɽ'],
+        's': ['s', 'ʃ', 'ʂ'],
+        't': ['t', 'θ',  'ʈ'],
+        'u': ['u', 'ʊ', 'ʉ'],
+        'v': ['v', 'ʌ', 'ʋ', 'ⱱ'],
+        'w': ['w', 'ʍ', 'ɯ', 'ɰ'],
+        'x': ['x', 'χ'],
+        'y': ['y', 'ʎ', 'ɣ', 'ʏ', 'ɤ'],
+        'z': ['z', 'ʒ', 'ʐ', 'ʑ'],
+    };
+
   function playAudio(audioUrl, word) {
     const audio = new Audio(audioUrl);
     // Show loading overlay
@@ -163,6 +193,58 @@
     
     function selectRadio(index) {
         document.getElementById(index).checked = true;
+    }
+
+    function showIPAPopup(event, index) {
+        var inputChar = event.target.value.slice(-1);   // get the last input character
+        var ipaOptions = ipaMapping[inputChar];         // get the mapping options
+        if (ipaOptions && ipaOptions.length > 0) {
+            var popup = document.getElementById('ipaPopup');
+            popup.innerHTML = ''; 
+            // generate option buttons based on the character
+            ipaOptions.forEach(function(ipaChar) {
+                var button = document.createElement('button');
+                button.textContent = ipaChar;
+                button.onclick = function() {
+                    insertIPA(ipaChar, index);
+                };
+                popup.appendChild(button);
+            });
+            // set position for popup
+            var inputField = document.getElementById("input_" + index);
+            var caretPosition = getCaretPosition(inputField);
+            var inputRect = event.target.getBoundingClientRect();
+            // Calculate the position of the popup
+            var topOffset = inputRect.top + window.pageYOffset + 30; // Adjust as needed
+            var leftOffset = inputRect.left + window.pageXOffset + caretPosition.left;
+
+            // Set the position of the popup
+            popup.style.top = topOffset + 'px';
+            popup.style.left = leftOffset + 'px';
+            popup.style.display = 'block';
+        } else {
+            hideIPAPopup();
+        }
+    }
+    // Function to get the caret position in the input field
+    function getCaretPosition(inputField) {
+        var selection = window.getSelection();
+        var range = selection.getRangeAt(0);
+        var rect = range.getBoundingClientRect();
+        return {
+            top: rect.top,
+            left: rect.left
+        };
+    }
+    // insert selected character into input field
+    function insertIPA(ipaChar, index) {
+        var inputField = document.getElementById("input_" + index);
+        inputField.value = inputField.value.slice(0, -1) + ipaChar; 
+        hideIPAPopup(); 
+    }
+
+    function hideIPAPopup() {
+        document.getElementById('ipaPopup').style.display = 'none';
     }
 </script>
 
