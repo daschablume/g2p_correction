@@ -18,6 +18,11 @@ def add_graphemes_and_log(grapheme2phoneme: dict[str, str]):
         # update grapheme if it already exists
         if grapheme in grapheme2id_phoneme:
             grapheme_id, from_phoneme = grapheme2id_phoneme[grapheme]
+            # don't save to log graphemes which were picked by accident
+            # in the form
+            current_phoneme = Grapheme.query.get(grapheme_id).phoneme
+            if current_phoneme == phoneme:
+                continue
             (Grapheme.query
              .filter(Grapheme.id == grapheme_id)
              .update
