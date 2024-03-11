@@ -135,3 +135,40 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+
+/* IPA Popup Styles */
+.ipa-popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1000; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+    border-radius: 4px;
+}
+
+.ipa-popup ul {
+    list-style: none;
+    padding: 0;
+}
+
+.ipa-popup li {
+    margin: 5px 0;
+}
+
+.ipa-popup button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.ipa-popup button:hover {
+    background-color: #e0e0e0;
+}
+
+.ipa-popup button:active {
+    background-color: #d0d0d0;
+}
