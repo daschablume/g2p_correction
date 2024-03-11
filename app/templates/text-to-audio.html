@@ -68,10 +68,16 @@
                 {% set checked_phoneme = word2picked_phoneme[word] %}
                 <div class="card mb-3">
                   <div class="card-header" onclick="toggleVariations('{{ word }}')">
-                    <button type="button" class="btn btn-link" onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
-                      <img onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')" src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
+                    <button type="button" class="btn btn-link" onkeypress="toggleVariations('{{ word }}')" 
+                            onclick="toggleVariations('{{ word }}')"  data-word="{{ word }}">
+                      <img onkeypress="toggleVariations('{{ word }}')" onclick="toggleVariations('{{ word }}')" 
+                            src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
                     </button>
-                    {{ word }}{% if word in word2db_phoneme %} * {% endif %} {# TODO: change the style #}
+                    {{ word }}
+                    {% if word in word2db_phoneme %}
+                      {% set grapheme_id = word2grapheme_id[word] %}
+                      <a href="{{ url_for('interface.grapheme_log_view', grapheme_id=grapheme_id) }}"><img src="../static/icons/arrow-up-right-square.svg" alt="Grapheme Log"></a> 
+                    {% endif %}
                   </div>
                   <div class="card-body" id="{{ word }}_variations" style="display: none;">
                     <div class="form-check">
