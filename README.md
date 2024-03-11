@@ -24,5 +24,3 @@
   2) flask db migrate -m "tables"
   3) flask db upgrade
 
-4. CREATE BRANCH BEFORE ANY CHANGES
-
