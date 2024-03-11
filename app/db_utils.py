@@ -58,5 +58,13 @@ def _create_grapheme_log(grapheme_id, grapheme_name, to_phoneme, from_phoneme=No
     return grapheme_log
 
 
-if __name__ == "__main__":
-    add_graphemes_and_log({'is': 'ˈɪs', 'in': 'ˈɪn', 'the': 'ðə', 'sky': 'ski'})
+def fetch_grapheme_log(grapheme_names: list[str]=None, graphemes: list[int]=None):
+    return (
+        db.session.query(
+            GraphemeLog.grapheme_name,
+            GraphemeLog.from_phoneme,
+            GraphemeLog.to_phoneme,
+            GraphemeLog.date_modified)
+        .filter(GraphemeLog.grapheme_name.in_(graphemes))
+        .all()
+    )

@@ -41,4 +41,4 @@ class GraphemeLog(db.Model):
     )
 
     def __repr__(self):
-        return f'GraphemeLog: id=[{self.id}], grapheme={self.grapheme}'
+        return f'GraphemeLog: id=[{self.id}], grapheme={self.grapheme_name}'

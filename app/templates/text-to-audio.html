@@ -48,7 +48,7 @@
         <form action="{{ url_for('interface.text_to_audio_view') }}" method="POST">
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="inputText" name="text" placeholder="Enter sentence (100 characters maximum)" maxlength="100" {% if text %} value="{{ text }}" {% endif %}>
-            <button type="button" class="btn btn-secondary" onclick="clearInput()">Clear</button>
+            <a class="btn btn-secondary" href="{{ url_for('interface.text_to_audio_view') }}">Clear</a>
             <button type="submit" class="btn btn-primary" value="Generate" name="generate">Generate</button>
             <button type="button" class="btn btn-info ml-2" id="listenAgainBtn" style="display: none;" onclick="listenAgain()">
                 <img src="../static/icons/ear.svg" alt="Listen Again" style="width: 16px; height: 16px;">
@@ -90,9 +90,7 @@
                           >
                             {{ phoneme }} 
                               {% if phoneme == db_phoneme %} 
-                                (saved) 
-                              {% elif phoneme not in phonemes_from_model %} 
-                                (from form)
+                                (saved)
                               {% endif %}
                           </label>
                         </div>
@@ -127,7 +125,6 @@
         'a': ['ɑ', 'æ', 'ɐ'],
         'd': ['ð'],
         'e': ['ə', 'ɚ', 'ɛ', 'ɜ'],
-        'g': ['ɡ'],
         'i': ['ɪ', 'ᵻ'],
         'n': ['ŋ'],
         'o': ['ɔ', 'œ', 'ɒ', 'ʌ'],
@@ -136,7 +133,6 @@
         't': ['t', 'θ'],
         'u': ['ʊ'],
         'z': ['ʒ'],
-        '\'': ['ˈ'],
         ',': ['ˌ'],
         ':': ['ː']
       };
@@ -168,11 +164,6 @@
         document.querySelector('button[data-word="' + word + '"] i');
         arrowImg.src = "../static/icons/arrow-bar-down.svg";
     }
-  }
-
-  function clearInput() {
-    document.getElementById('inputText').value = '';
-    document.getElementById('listenAgainBtn').style.display = 'none'; // hide listen again icon
   }
 
   function listenAgain() {
