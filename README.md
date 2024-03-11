@@ -1,7 +1,7 @@
 # forced_ui_alignment
 
 
-1. How to install:
+**1. How to install:**
   (was tested on Mac Mojave)
 
   1) download this repo
@@ -16,7 +16,7 @@
     conda doesn't know about its existence)
     pip install matcha-tts
   
-2. How to run the app
+**2. How to run the app**
   
   1) export FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"
   2) cd YOU_ABSOLUTE_PATH/g2p_corrections
