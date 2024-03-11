@@ -1,3 +1,6 @@
+# all code is from montreal forced aligner.
+# link: https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner/tree/main/
+
 import abc
 from typing import get_type_hints, Union
 from pathlib import Path

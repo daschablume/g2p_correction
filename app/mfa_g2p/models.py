@@ -1,3 +1,6 @@
+# all code is from montreal forced aligner.
+# link: https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner/tree/main/
+
 import abc
 import json
 import os
