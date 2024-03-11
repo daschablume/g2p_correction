@@ -27,7 +27,7 @@ def text_to_audio_view():
             word2db_phoneme = fetch_grapheme2phoneme(words)
             word2model_phonemes = get_grapheme2phonemes_from_model(words)
             word2phonemes, word2picked_phoneme, phonemized_str = (
-                phonemize(word2model_phonemes, word2db_phoneme)
+                phonemize(words, word2model_phonemes, word2db_phoneme)
             )
             
         elif form.get('regenerate') or form.get('confirm'):
@@ -37,7 +37,7 @@ def text_to_audio_view():
             word2phonemes = json.loads(form["jsoned_word2phonemes"])
             word2phonemes, word2picked_phoneme = pick_phoneme_from_form(
                 word2phonemes, form)
-            phonemized_str = phonemes_to_string(word2picked_phoneme.values())
+            phonemized_str = phonemes_to_string(words, word2picked_phoneme)
 
             if form.get('confirm'):
                 try:

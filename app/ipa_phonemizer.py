@@ -63,19 +63,22 @@ def enrich_model_phonemes_with_db(
     return word2model_phonemes, word2picked_phoneme
 
 
-def phonemes_to_string(phonemes: t.Iterable[str]) -> str:
+def phonemes_to_string(
+    word_list: list[str], word2picked_phoneme: dict[str, str]
+) -> str:
+    phonemes = [word2picked_phoneme.get(word, '') for word in word_list]
     # removes whitespaces before punctuation and joins the phonemes
     return re.sub(PUNCT_PATTERN, "", " ".join(phonemes))
 
 
 def phonemize(
+    word_list: list[str],
     word2model_phonemes: dict[str, list],
     word2db_phoneme: dict[str, str],
 ) -> tuple[dict[str, list], dict[str, str], str]:
     word2phonemized, word2picked_phoneme = enrich_model_phonemes_with_db(
         word2model_phonemes, word2db_phoneme)
-    phonemized_str = phonemes_to_string(word2picked_phoneme.values())
-
+    phonemized_str = phonemes_to_string(word_list, word2picked_phoneme)
     return word2phonemized, word2picked_phoneme, phonemized_str
 
 
