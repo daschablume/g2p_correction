@@ -6,7 +6,6 @@ sqlalchemy
 Jinja2
 MarkupSafe
 Werkzeug==3.0.1
-matcha-tts
 praatio>=6.0.0
 tqdm
 pyyaml
@@ -22,4 +21,5 @@ rich
 rich-click
 numpy
 pynini
+# matcha-tts # install it using pip
 
