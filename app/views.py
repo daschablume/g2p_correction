@@ -16,7 +16,10 @@ AUDIO = 'static/audio/utterance.wav'
 def text_to_audio_view():
     # import here, otherwise circular import
     from app import db
-    from app.db_utils import add_graphemes_and_log, fetch_grapheme2phoneme
+    from app.db_utils import (
+        add_graphemes_and_log, fetch_grapheme2phoneme,
+        fetch_grapheme_ids_by_name
+    )
 
     if request.method == 'POST':
         form = request.form
@@ -28,13 +31,12 @@ def text_to_audio_view():
 
         if form.get('generate'):
             word2db_phoneme = fetch_grapheme2phoneme(words)
-            print(f'word2db_phoneme: {word2db_phoneme}')
+            word2grapheme_id = fetch_grapheme_ids_by_name(
+                word2db_phoneme.keys())
             word2model_phonemes = get_grapheme2phonemes_from_model(words)
-            print(f'word2model_phonemes: {word2model_phonemes}')
             word2phonemes, word2picked_phoneme, phonemized_str = (
                 phonemize(words, word2model_phonemes, word2db_phoneme)
             )
-            print(f'word2phonemes: {word2phonemes}, word2picked_phoneme: {word2picked_phoneme}, phonemized_str: {phonemized_str}')
             
         elif form.get('regenerate') or form.get('confirm'):
             # TODO: it would be nice to show to a user "saved"
@@ -57,6 +59,7 @@ def text_to_audio_view():
             
             # fetch db phonemes after saving them to db
             word2db_phoneme = fetch_grapheme2phoneme(words)
+            word2grapheme_id = fetch_grapheme_ids_by_name(word2db_phoneme.keys())
 
         else:
             raise NotImplementedError
@@ -76,9 +79,24 @@ def text_to_audio_view():
             word2model_phonemes=word2model_phonemes,
             jsoned_word2model_phonemes = json.dumps(
                 word2model_phonemes, ensure_ascii=False),
+            word2grapheme_id=word2grapheme_id
         )
 
     return render_template('text-to-audio.html')
+
+
+def grapheme_log_view(grapheme_id):
+    from app.db_utils import fetch_grapheme_logs, fetch_grapheme
+    from app.models import Grapheme
+
+    grapheme_logs = fetch_grapheme_logs(grapheme_id)
+    grapheme, phoneme = fetch_grapheme(grapheme_id)
+
+    return render_template(
+        'grapheme-log.html', 
+        grapheme=grapheme,
+        phoneme=phoneme,
+        grapheme_logs=grapheme_logs)
 
 
 def timestamp_audio(filename):

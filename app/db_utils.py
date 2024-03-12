@@ -18,6 +18,11 @@ def add_graphemes_and_log(grapheme2phoneme: dict[str, str]):
         # update grapheme if it already exists
         if grapheme in grapheme2id_phoneme:
             grapheme_id, from_phoneme = grapheme2id_phoneme[grapheme]
+            # don't save to log graphemes which were picked by accident
+            # in the form
+            current_phoneme = Grapheme.query.get(grapheme_id).phoneme
+            if current_phoneme == phoneme:
+                continue
             (Grapheme.query
              .filter(Grapheme.id == grapheme_id)
              .update
@@ -43,10 +48,25 @@ def fetch_grapheme2phoneme(graphemes: list[str]):
     return grapheme2phoneme
 
 
+def fetch_grapheme_logs(grapheme_id: int):
+    return (
+        db.session.query(
+            GraphemeLog.grapheme_name,
+            GraphemeLog.from_phoneme,
+            GraphemeLog.to_phoneme,
+            GraphemeLog.date_modified)
+        .filter(GraphemeLog.grapheme_id == grapheme_id)
+        .order_by(GraphemeLog.date_modified.desc())
+        .all()
+    )
+
+
+def fetch_grapheme(grapheme_id: int):
+    grapheme = Grapheme.query.get(grapheme_id)
+    return grapheme.grapheme, grapheme.phoneme
+
+
 def _create_grapheme_log(grapheme_id, grapheme_name, to_phoneme, from_phoneme=None):
-    '''
-    Create a grapheme log.
-    '''
     grapheme_log = GraphemeLog(
         grapheme_id=grapheme_id,
         grapheme_name=grapheme_name,
@@ -58,13 +78,9 @@ def _create_grapheme_log(grapheme_id, grapheme_name, to_phoneme, from_phoneme=No
     return grapheme_log
 
 
-def fetch_grapheme_log(grapheme_names: list[str]=None, graphemes: list[int]=None):
-    return (
+def fetch_grapheme_ids_by_name(graphemes: list):
+    return dict(
         db.session.query(
-            GraphemeLog.grapheme_name,
-            GraphemeLog.from_phoneme,
-            GraphemeLog.to_phoneme,
-            GraphemeLog.date_modified)
-        .filter(GraphemeLog.grapheme_name.in_(graphemes))
-        .all()
+            Grapheme.grapheme, Grapheme.id, )
+        .filter(Grapheme.grapheme.in_(graphemes))
     )
