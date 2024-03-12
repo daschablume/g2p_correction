@@ -2,6 +2,7 @@
 # https://github.com/shivammehta25/Matcha-TTS/blob/256adc55d3219053d2d086db3f9bd9a4bde96fb1/synthesis.ipynb
 
 import datetime as dt
+from functools import cache
 import os
 from pathlib import Path
 
@@ -15,10 +16,10 @@ from matcha.text import sequence_to_text
 from matcha.text.symbols import symbols
 from matcha.utils.utils import intersperse
 
+from app.ipa_phonemizer import is_word
 from app.load_models import MATCHA_MODEL, VOCODER, DENOISER, DEVICE
 
 HYPERPARAMS = SimpleNamespace(n_timesteps=10, temperature=1.0, length_scale=0.667)
-
 OUTPUT_FOLDER = os.path.join('app', 'static', 'audio')
 
 
@@ -63,7 +64,7 @@ def process_text(text: str, phonemized_text: str):
 
 
 @torch.inference_mode()
-def synthesise(text, phonemized_text, args, model, spks=None):
+def synthesise(text, phonemized_text, model, args=HYPERPARAMS, spks=None):
     text_processed = process_text(text, phonemized_text)
     start_t = dt.datetime.now()
     output = model.synthesise(
@@ -94,34 +95,75 @@ def save_to_folder(filename: str, output: dict, folder: str):
     return folder / f'{filename}.wav'
 
 
-def synthesize_matcha_audio(
-        text: str, phonemized: str, 
-        model=MATCHA_MODEL, vocoder=VOCODER, denoiser=DENOISER, 
-        hyperparams=HYPERPARAMS
+def synthesize_matcha_audios(
+    text: str, phonemized: str, word2phonemes: dict[str, list[str]],
+    model=MATCHA_MODEL, vocoder=VOCODER, denoiser=DENOISER, 
+    output_folder=OUTPUT_FOLDER
 ):
-    output_folder = OUTPUT_FOLDER
 
     rtfs = []
     rtfs_w = []
 
-    # in original code, there is a loop over texts; here, it's just one
-    output = synthesise(text, phonemized, hyperparams, model)
+    # synthesize the whole sentence first -- from user's input
+    rtf, rtf_w, _ = synthesize_matcha_audio(
+        text, phonemized,
+        model=model, vocoder=vocoder, denoiser=denoiser, 
+        output_folder=output_folder,
+        utterance=True,
+    )
+
+    # it's a bit redundant to repeat list.append here
+    # but functools.cache accepts only hashable arguments
+    rtfs.append(rtf)
+    rtfs_w.append(rtf_w)
+    
+    phonemes2audio_names = {}
+    for word, phonemes in word2phonemes.items():
+        if not is_word(word):
+            continue
+        for phoneme in phonemes:
+            rtf, rtf_w, name = synthesize_matcha_audio(
+                word, phoneme,
+                model=model, vocoder=vocoder, denoiser=denoiser, 
+                output_folder=output_folder
+            )
+            rtfs.append(rtf)
+            rtfs_w.append(rtf_w)
+            phonemes2audio_names[phoneme] = name
+
+    print(f"Number of ODE steps: {HYPERPARAMS.n_timesteps}")
+    print(f"Mean RTF:\t\t\t\t{np.mean(rtfs):.6f} ± {np.std(rtfs):.6f}")
+    print(f"Mean RTF Waveform (incl. vocoder):\t{np.mean(rtfs_w):.6f} ± {np.std(rtfs_w):.6f}")
+    print(f'Cache info: {synthesize_matcha_audio.cache_info()}')
+
+    return phonemes2audio_names
+
+
+@cache
+def synthesize_matcha_audio(
+    text: str, phonemized: str,
+    model, vocoder, denoiser, output_folder,
+    utterance=False
+):
+    output = synthesise(text, phonemized, model)
     output['waveform'] = to_waveform(output['mel'], vocoder, denoiser)
 
     # Compute Real Time Factor (RTF) with HiFi-GAN
     t = (dt.datetime.now() - output['start_t']).total_seconds()
     rtf_w = t * 22050 / (output['waveform'].shape[-1])
-    rtfs.append(output['rtf'])
-    rtfs_w.append(rtf_w)
-
+    
     ## Display the synthesised waveform
     ipd.display(ipd.Audio(output['waveform'], rate=22050))
 
-    ## Save the generated waveform
-    output_path = save_to_folder("utterance", output, output_folder)
+    ## Save the generated waveform: with the name 'utterance.wav' if it's a sentence, 
+    ## and to a hash if it's a phonemized word
+    if utterance:
+        name = "utterance"
+    else:
+        name = str(hash(phonemized))
+        
+    save_to_folder(name, output, output_folder)
 
-    print(f"Number of ODE steps: {hyperparams.n_timesteps}")
-    print(f"Mean RTF:\t\t\t\t{np.mean(rtfs):.6f} ± {np.std(rtfs):.6f}")
-    print(f"Mean RTF Waveform (incl. vocoder):\t{np.mean(rtfs_w):.6f} ± {np.std(rtfs_w):.6f}")
+    return output['rtf'], rtf_w, name
 
-    return output_path.relative_to('app/')
+ 

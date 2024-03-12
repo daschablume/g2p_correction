@@ -8,7 +8,9 @@ from app.ipa_phonemizer import (
     enrich_model_phonemes_with_db, phonemes_to_string,
     tokenize
 )
-from app.matcha_utils import synthesize_matcha_audio
+from app.matcha_utils import synthesize_matcha_audios
+
+AUDIO = 'static/audio/utterance.wav'
 
 
 def text_to_audio_view():
@@ -22,13 +24,17 @@ def text_to_audio_view():
         print(form)
         text = form['text']
         words = tokenize(text)
+        print(f'words: {words}')
 
         if form.get('generate'):
             word2db_phoneme = fetch_grapheme2phoneme(words)
+            print(f'word2db_phoneme: {word2db_phoneme}')
             word2model_phonemes = get_grapheme2phonemes_from_model(words)
+            print(f'word2model_phonemes: {word2model_phonemes}')
             word2phonemes, word2picked_phoneme, phonemized_str = (
                 phonemize(words, word2model_phonemes, word2db_phoneme)
             )
+            print(f'word2phonemes: {word2phonemes}, word2picked_phoneme: {word2picked_phoneme}, phonemized_str: {phonemized_str}')
             
         elif form.get('regenerate') or form.get('confirm'):
             # TODO: it would be nice to show to a user "saved"
@@ -55,10 +61,14 @@ def text_to_audio_view():
         else:
             raise NotImplementedError
 
-        audio = timestamp_audio(synthesize_matcha_audio(text, phonemized_str))
+        phoneme2audio = synthesize_matcha_audios(text, phonemized_str, word2phonemes)
+        audio = timestamp_audio(AUDIO)
+
+        print(f'{phoneme2audio=}')
 
         return render_template(
             'text-to-audio.html', audio=audio,
+            phoneme2audio=phoneme2audio,
             text=text, word2phonemes=word2phonemes,
             word2picked_phoneme=word2picked_phoneme,
             jsoned_word2phonemes=json.dumps(word2phonemes, ensure_ascii=False),

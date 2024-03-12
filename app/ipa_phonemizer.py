@@ -26,7 +26,7 @@ def get_grapheme2phonemes_from_model(
     word2phonemes = dict()  
     for word in word_list:
         # handle words like hel-loh or 'ello, but don't phonemize punctuation
-        if not word.replace('-', '').replace('\'', '').isalpha():
+        if not is_word(word):
             word2phonemes[word] = [word]
         else:
             phonemized = g2p.rewriter(word)
@@ -85,3 +85,8 @@ def phonemize(
 def collapse_whitespaces(phoneme: str) -> str:
     # 'h ɛ l l o ʊ' => 'hɛlloʊ'
     return phoneme.replace(" ", "")
+
+
+def is_word(word: str) -> bool:
+    # handle words like hel-loh or 'ello, but don't phonemize punctuation
+    return word.replace('-', '').replace('\'', '').isalpha()
