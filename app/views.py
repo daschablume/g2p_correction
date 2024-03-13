@@ -68,6 +68,12 @@ def text_to_audio_view():
         audio = timestamp_audio(AUDIO)
 
         print(f'{phoneme2audio=}')
+        print(f'{audio=}')
+        print(f'{word2phonemes=}')
+        print(f'{word2picked_phoneme=}')
+        print(f'{word2db_phoneme=}')
+        print(f'{word2model_phonemes=}')
+        print(f'{phonemized_str=}')
 
         return render_template(
             'text-to-audio.html', audio=audio,

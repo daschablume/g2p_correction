@@ -60,7 +60,6 @@
           <input type="hidden" name="jsoned_word2phonemes" value='{{ jsoned_word2phonemes }}'>
           <input type="hidden" name="jsoned_word2model_phonemes" value='{{ jsoned_word2model_phonemes }}'>
           <div class="mt-4">
-            <h5>Choose the phoneme considered to be wrong:</h5>
             {% for word, phonemes in word2phonemes.items() %}
               {% if word.isalpha() %}
                 {% set db_phoneme = word2db_phoneme[word] %}
