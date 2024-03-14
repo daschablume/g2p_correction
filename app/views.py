@@ -6,7 +6,7 @@ from flask import render_template, request, redirect, url_for
 from app.ipa_phonemizer import (
     phonemize, get_grapheme2phonemes_from_model,
     enrich_model_phonemes_with_db, phonemes_to_string,
-    tokenize
+    tokenize, is_word
 )
 from app.matcha_utils import synthesize_matcha_audios
 
@@ -85,7 +85,8 @@ def text_to_audio_view():
             word2model_phonemes=word2model_phonemes,
             jsoned_word2model_phonemes = json.dumps(
                 word2model_phonemes, ensure_ascii=False),
-            word2grapheme_id=word2grapheme_id
+            word2grapheme_id=word2grapheme_id,
+            is_word=is_word
         )
 
     return render_template('text-to-audio.html')
@@ -117,7 +118,7 @@ def pick_phoneme_from_form(word2phonemes, form):
 
     word2picked_phoneme = {}
     for word, all_phonemes in word2phonemes.items() :
-        if not word.isalpha():
+        if not is_word(word):
             continue
         # form phonemes: radio input -- either picked or orthographic
         form_phonemes = form.getlist(word)

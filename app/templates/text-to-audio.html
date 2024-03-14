@@ -61,7 +61,7 @@
           <input type="hidden" name="jsoned_word2model_phonemes" value='{{ jsoned_word2model_phonemes }}'>
           <div class="mt-4">
             {% for word, phonemes in word2phonemes.items() %}
-              {% if word.isalpha() %}
+              {% if is_word(word) %}
                 {% set db_phoneme = word2db_phoneme[word] %}
                 {% set phonemes_from_model = word2model_phonemes[word] %}
                 {% set checked_phoneme = word2picked_phoneme[word] %}
@@ -146,7 +146,7 @@
   };
 
   function playAudio(audioSrc) {
-    var audioPlayer = document.getElementById('audioPlayer');
+    var audioPlayer = document.getElementById('audioPlayerPhoneme');
     audioPlayer.src = audioSrc;
     audioPlayer.play();
   }

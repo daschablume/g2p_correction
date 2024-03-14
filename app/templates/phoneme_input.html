@@ -16,5 +16,5 @@
       {{ phoneme }} {% if db_phoneme %} (saved) {% endif %}
     </label>
   </div>
-  <audio class="audio" data-src="{{ audio_url }}"></audio>
+  <audio class="audio" data-src="{{ audio_url }}" id="audioPlayerPhoneme"></audio>
 {% endmacro %}
