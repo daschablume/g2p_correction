@@ -6,9 +6,11 @@ from flask import render_template, request, redirect, url_for
 from app.ipa_phonemizer import (
     phonemize, get_grapheme2phonemes_from_model,
     enrich_model_phonemes_with_db, phonemes_to_string,
-    tokenize
+    tokenize, is_word
 )
-from app.matcha_utils import synthesize_matcha_audio
+from app.matcha_utils import synthesize_matcha_audios
+
+AUDIO = 'static/audio/utterance.wav'
 
 
 def text_to_audio_view():
@@ -25,6 +27,7 @@ def text_to_audio_view():
         print(form)
         text = form['text']
         words = tokenize(text)
+        print(f'words: {words}')
 
         if form.get('generate'):
             word2db_phoneme = fetch_grapheme2phoneme(words)
@@ -61,10 +64,20 @@ def text_to_audio_view():
         else:
             raise NotImplementedError
 
-        audio = timestamp_audio(synthesize_matcha_audio(text, phonemized_str))
+        phoneme2audio = synthesize_matcha_audios(text, phonemized_str, word2phonemes)
+        audio = timestamp_audio(AUDIO)
+
+        print(f'{phoneme2audio=}')
+        print(f'{audio=}')
+        print(f'{word2phonemes=}')
+        print(f'{word2picked_phoneme=}')
+        print(f'{word2db_phoneme=}')
+        print(f'{word2model_phonemes=}')
+        print(f'{phonemized_str=}')
 
         return render_template(
             'text-to-audio.html', audio=audio,
+            phoneme2audio=phoneme2audio,
             text=text, word2phonemes=word2phonemes,
             word2picked_phoneme=word2picked_phoneme,
             jsoned_word2phonemes=json.dumps(word2phonemes, ensure_ascii=False),
@@ -72,7 +85,8 @@ def text_to_audio_view():
             word2model_phonemes=word2model_phonemes,
             jsoned_word2model_phonemes = json.dumps(
                 word2model_phonemes, ensure_ascii=False),
-            word2grapheme_id=word2grapheme_id
+            word2grapheme_id=word2grapheme_id,
+            is_word=is_word
         )
 
     return render_template('text-to-audio.html')
@@ -104,7 +118,7 @@ def pick_phoneme_from_form(word2phonemes, form):
 
     word2picked_phoneme = {}
     for word, all_phonemes in word2phonemes.items() :
-        if not word.isalpha():
+        if not is_word(word):
             continue
         # form phonemes: radio input -- either picked or orthographic
         form_phonemes = form.getlist(word)

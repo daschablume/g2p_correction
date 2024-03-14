@@ -61,7 +61,7 @@
           <input type="hidden" name="jsoned_word2model_phonemes" value='{{ jsoned_word2model_phonemes }}'>
           <div class="mt-4">
             {% for word, phonemes in word2phonemes.items() %}
-              {% if word.isalpha() %}
+              {% if is_word(word) %}
                 {% set db_phoneme = word2db_phoneme[word] %}
                 {% set phonemes_from_model = word2model_phonemes[word] %}
                 {% set checked_phoneme = word2picked_phoneme[word] %}
@@ -83,6 +83,7 @@
                       {% if db_phoneme %}
                         {{ display_phoneme_input(
                           word, db_phoneme,
+                          audio_name=phoneme2audio[db_phoneme],
                           index=0, 
                           checked=True,
                           db_phoneme=True,
@@ -92,6 +93,7 @@
                       {% for phoneme in phonemes if phoneme != db_phoneme %}
                         {{ display_phoneme_input(
                           word, phoneme,
+                          audio_name=phoneme2audio[phoneme],
                           index=loop.index, 
                           checked=phoneme==checked_phoneme,
                           db_phoneme=False,
@@ -111,8 +113,10 @@
             {% endfor %}
           </div>
           <div class="button-container">
-            <button type="submit" class="btn btn-primary mr-10" value="Regenerate" name="regenerate">Test</button>
-            <button type="submit" class="btn btn-success" value="Confirm" name="confirm">Confirm</button>
+            <button type="submit" class="btn btn-primary mr-10" value="Regenerate" 
+                    name="regenerate">Test</button>
+            <button type="submit" class="btn btn-success" value="Confirm" 
+                    name="confirm">Confirm</button>
           </div>
         </form>
         {% endif %}
@@ -121,36 +125,32 @@
   </div>
 </div>
 
-<script>
-      // IPA Characters Mapping
-      const ipaMapping = {
-        'a': ['ɑ', 'æ', 'ɐ', 'ʌ'],
-        'd': ['ð'],
-        'e': ['ə', 'ɚ', 'ɛ', 'ɜ'],
-        'i': ['ɪ', 'ᵻ'],
-        'n': ['ŋ'],
-        'o': ['ɔ', 'œ', 'ɒ',],
-        'r': ['ɾ', 'ɹ'],
-        's': ['ʃ'],
-        't': ['θ'],
-        'u': ['ʊ'],
-        'z': ['ʒ'],
-        ',': ['ˌ'],
-        ':': ['ː']
-      };
+<audio id="audioPlayer" controls style="display:none;">
+  Your browser does not support the audio element.
+</audio>
 
-  function playAudio(audioUrl, word) {
-    const audio = new Audio(audioUrl);
-    // Show loading overlay
-    document.getElementById('loadingOverlay').style.display = 'flex';
-    audio.play().then(function() {
-        // Hide loading overlay when audio finishes playing
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }).catch(function(error) {
-        console.error("Audio play failed:", error);
-        // Hide loading overlay on error
-        document.getElementById('loadingOverlay').style.display = 'none';
-    });
+<script>
+  // IPA Characters Mapping
+  const ipaMapping = {
+    'a': ['ɑ', 'æ', 'ɐ', 'ʌ'],
+    'd': ['ð'],
+    'e': ['ə', 'ɚ', 'ɛ', 'ɜ'],
+    'i': ['ɪ', 'ᵻ'],
+    'n': ['ŋ'],
+    'o': ['ɔ', 'œ', 'ɒ',],
+    'r': ['ɾ', 'ɹ'],
+    's': ['ʃ'],
+    't': ['θ'],
+    'u': ['ʊ'],
+    'z': ['ʒ'],
+    ',': ['ˌ'],
+    ':': ['ː']
+  };
+
+  function playAudio(audioSrc) {
+    var audioPlayer = document.getElementById('audioPlayerPhoneme');
+    audioPlayer.src = audioSrc;
+    audioPlayer.play();
   }
 
 
