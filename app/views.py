@@ -23,11 +23,8 @@ def text_to_audio_view():
 
     if request.method == 'POST':
         form = request.form
-        print(80*'=')
-        print(form)
         text = form['text']
         words = tokenize(text)
-        print(f'words: {words}')
 
         if form.get('generate'):
             word2db_phoneme = fetch_grapheme2phoneme(words)
@@ -66,14 +63,6 @@ def text_to_audio_view():
 
         phoneme2audio = synthesize_matcha_audios(text, phonemized_str, word2phonemes)
         audio = timestamp_audio(AUDIO)
-
-        print(f'{phoneme2audio=}')
-        print(f'{audio=}')
-        print(f'{word2phonemes=}')
-        print(f'{word2picked_phoneme=}')
-        print(f'{word2db_phoneme=}')
-        print(f'{word2model_phonemes=}')
-        print(f'{phonemized_str=}')
 
         return render_template(
             'text-to-audio.html', audio=audio,
