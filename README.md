@@ -1,4 +1,6 @@
-# forced_ui_alignment
+# Grapheme to phoneme: correction using user interface
+
+Powered by matcha-tts and retrained mfa model (since matcha is using espeak).
 
 ## How to install: ##
   (was tested on Mac Mojave)
