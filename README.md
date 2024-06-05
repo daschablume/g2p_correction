@@ -1,6 +1,8 @@
 # Grapheme to phoneme: correction using user interface
 
 Powered by matcha-tts and *retrained montreal forced alignment model (*since matcha-tts is using espeak).
+A part of the KTH course "Speech Technology".
+Supervisors: Jens Edlund and Jim O'Regan.
 
 ## How to install: ##
   (was tested on Mac Mojave)
