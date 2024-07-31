@@ -1,7 +1,8 @@
 **/.DS_Store
 app/static/audio/
 app/mfa_g2p/__pycache__/
+app/app.db
+matcha-models/
 app/__pycache__
 __pycache__/
 migrations/
-app/app.db
