@@ -4,10 +4,8 @@ Powered by matcha-tts and *retrained montreal forced alignment model (*since mat
 A part of the KTH course "Speech Technology".
 Supervisors: Jens Edlund and Jim O'Regan.
 
-## How to install and run ##
-
-### Without Docker ###
-  (was tested on Mac Mojave)
+## How to install and run – without Docker ##
+(was tested on Mac Mojave)
 #### Setup ####
 1. Download/clone this repo
 2. Ensure you have conda and add the conda-forge channel to your Conda configuration  
@@ -29,11 +27,12 @@ Supervisors: Jens Edlund and Jim O'Regan.
 `export FLASK_ENV=development`)
 3. `flask run`
 
-### With Docker ###
+## How to install and run — with Docker ##
 
 #### Setup ####
 1. Download/clone the repository
-2. Being inside the `g2p_correction` directory, build the Docker image:
+2. Have your Docker app open
+3. Being inside the `g2p_correction` directory, build the Docker image:
     ```docker build -t g2p_correction:latest .```
 
 #### Running the app within Docker Container ####
