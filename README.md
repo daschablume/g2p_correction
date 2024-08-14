@@ -15,9 +15,10 @@ Supervisors: Jens Edlund and Jim O'Regan.
 `
 4. Activate the environment
 `conda activate g2p_env`
-5. Install requirements using conda
+5. Comment out `matcha-tts` in requirements.txt (because one can install matcha-tts package only using pip)
+6. Install requirements using conda
 `conda install --file requirements.txt`
-6. Install matcha-tts using pip (which is in requirements.txt, but commented out, since conda doesn't know about its existence)
+7. Install matcha-tts using pip 
 `pip install matcha-tts`
   
 #### Run the app ####
@@ -41,6 +42,4 @@ Supervisors: Jens Edlund and Jim O'Regan.
     ```
     docker run --name g2p_correction_container -p 5000:5000 --rm g2p_correction:latest
     ```
-
-This will start the container with the environment defined in `environment.yml`.
 
