@@ -372,31 +372,6 @@ class G2PModel(Archive):
     def grapheme_table(self):
         return pywrapfst.SymbolTable.read_text(self.grapheme_sym_path)
 
-    @property
-    def rewriter(self):
-        if not self.grapheme_sym_path.exists():
-            return None
-        if self.meta["architecture"] == "phonetisaurus":
-            from montreal_forced_aligner.g2p.generator import PhonetisaurusRewriter
-
-            rewriter = PhonetisaurusRewriter(
-                self.fst,
-                self.grapheme_table,
-                self.phone_table,
-                num_pronunciations=1,
-                grapheme_order=self.meta["grapheme_order"],
-                graphemes=self.meta["graphemes"],
-                sequence_separator=self.meta["sequence_separator"],
-                strict=True,
-            )
-        else:
-            from montreal_forced_aligner.g2p.generator import Rewriter
-
-            rewriter = Rewriter(
-                self.fst, self.grapheme_table, self.phone_table, num_pronunciations=1, strict=True
-            )
-        return rewriter
-
     def add_meta_file(self, g2p_trainer) -> None:
         """
         Construct metadata information for the G2P model from the dictionary it was trained from
