@@ -9,6 +9,7 @@ RUN apt-get update && \
     libffi-dev \
     libssl-dev \
     python3-dev \
+    python3-pip \
     ca-certificates \
     curl \
     git \
@@ -21,21 +22,11 @@ WORKDIR /g2p_correction
 # Copy the application code to the working directory
 COPY . /g2p_correction
 
-# Install Miniconda
-ENV PATH /opt/conda/bin:$PATH
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda && \
-    rm Miniconda3-latest-Linux-x86_64.sh
+# Install Python dependencies using pip
+COPY requirements.txt /g2p_correction/requirements.txt
+RUN pip install --no-cache-dir -r /g2p_correction/requirements.txt
 
-# Install the dependencies and activate the environment
-COPY environment.yml /g2p_correction/environment.yml
-RUN conda env create -f /g2p_correction/environment.yml
-
-# Activate conda and set default environment
-RUN echo "source activate g2p_env" >> ~/.bashrc
-ENV PATH /opt/conda/envs/g2p_env/bin:$PATH
-
-# Install espeak through sudo
+# Install espeak
 RUN apt-get update && apt-get install -y espeak && \
     rm -rf /var/lib/apt/lists/*
 
@@ -51,4 +42,4 @@ ENV FLASK_RUN_PORT=5000
 EXPOSE 5000
 
 # Set the entry point to run the Flask app
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "g2p_env", "flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
