@@ -6,7 +6,7 @@ Supervisors: Jens Edlund and Jim O'Regan.
 
 ## How to install and run – without Docker ##
 (was tested on Mac Mojave)
-#### Setup ####
+### Setup ###
 **1. Download/clone this repo**
 
 **2. Ensure you have conda and add the conda-forge channel to your Conda configuration**
@@ -32,7 +32,7 @@ conda install --file requirements.txt
 pip install matcha-tts
 ```
   
-#### Run the app ####
+### Run the app ###
 **1.** 
 ```
 export FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"
@@ -52,7 +52,7 @@ flask run
 
 ## How to install and run — with Docker ##
 
-#### Setup ####
+### Setup ###
 **1. Download/clone the repository**
 
 **2. Have your Docker app open**
@@ -66,7 +66,7 @@ docker pull ubuntu:22.04
 docker build -t g2p_correction:latest .
 ```
 
-#### Running the app within Docker Container ####
+### Running the app within Docker Container ###
 
 ```
 docker run --name g2p_correction_container -p 5000:5000 --rm g2p_correction:latest
