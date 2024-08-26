@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from "phoneme_input.html" import display_phoneme_input %}
+{% from "utils.html" import display_phoneme_input, upload_file_button %}
 
 {% block title %}G2P Correction{% endblock %}
 
@@ -18,6 +18,7 @@
 <div class="container-fluid">
   <div class="row justify-content-center align-items-center min-vh-100">
     <div class="col-md-8">
+      {{ upload_file_button() }}
       {% if audio %}
         <audio id="audioPlayer" style="display:none;">
           <source src="{{ audio }}" type="audio/wav">

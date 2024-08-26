@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% from "utils.html" import display_phone_from_textgrid, upload_file_button %}
+
+{% block title %}Upload TextGrid{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="../static/css/styles.css">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+</div>
+
+<!-- IPA Character Popup -->
+<div id="ipaPopup" class="ipa-popup" style="display: none;"></div>
+
+<div class="container-fluid">
+  <div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-8">
+      {{ upload_file_button(back=True) }}
+      <div class="card p-4 mb-4">
+        <h3 class="text-center mb-4">G2P Correction: Uploading a new TextGrid</h3>
+        <p class="text-center" style="font-family: 'Courier New', Courier, monospace; font-size: 1em; color: #380aee;">
+          {% if file_name %}
+            Filename: {{ file_name }}
+          {% endif %}
+          
+        </p>
+      </div>
+
+      <div class="mt-4">
+        {% if not file_name %}
+          <div class="alert alert-warning" role="alert">
+            No file found. Please upload a new TextGrid.
+          </div>
+        {% elif errors %}
+          <div class="alert alert-danger" role="alert">
+            {% for error in errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% elif save_flag %}
+          <div class="alert alert-success" role="alert">
+            The words and transcriptions have been saved successfully.
+          </div>
+        {% else %}
+          <div class="alert alert-info" role="alert">
+            Please correct the phonetic transcriptions for the following words.
+          </div>
+        {% endif %}
+        {% if new_words2phones %}
+          <form action="{{ url_for('interface.upload_file_view') }}" method="POST">
+            <input type="hidden" name="jsoned_new_words2phones" value='{{ jsoned_new_words2phones }}'>
+            <input type="hidden" name="saved_flag" value="{{ saved_flag }}">
+            <input type="hidden" name="file_name" value="{{ file_name }}">
+            {% for word, phones in new_words2phones.items() %}
+              <div class="card mb-3">
+                <div class="card-header" onclick="toggleVariations('{{ word }}')">
+                  <button type="button" class="btn btn-link" onkeypress="toggleVariations('{{ word }}')" 
+                          onclick="toggleVariations('{{ word }}')" data-word="{{ word }}">
+                    <img src="../static/icons/arrow-bar-down.svg" alt="Toggle Variations">
+                  </button>
+                  {{ word }}
+                </div>
+                <div class="card-body" id="{{ word }}_variations" style="display: block;">
+                  {% if word in discarded_words %}
+                    <p style="color: #ee0a0a;">This word has been discarded.</p>
+                  {% else %}
+                    {% for phone in phones %}
+                      {{ display_phone_from_textgrid(word, phone, index=loop.index, checked=loop.index == 1) }}
+                    {% endfor %}
+                  {% endif %}
+                  <div class="form-check mt-3">
+                    <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" id="{{ loop.index }}">
+                    <input name="{{ word }}" placeholder="Provide your own" id="input_{{ loop.index }}" autocomplete="off" onkeyup="showIPAPopup(event, '{{loop.index}}')"
+                            onkeyup="checkCustom('{{ word }}')" onfocus="checkCustom('{{ word }}')">
+                  </div>
+                  {% if word not in discarded_words %}
+                    <div class="form-check mt-3">
+                      <input type="radio" class="form-check-input" name="{{ word }}" value="discard" id="delete_{{ word }}">
+                      <label class="form-check-label text-danger" for="delete_{{ word }}">Discard this word</label>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+            <div class="button-container">
+              <button type="submit" class="btn btn-success" value="Confirm" 
+                      name="confirm_changes">Confirm</button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </div> 
+  </div>
+</div>
+
+<script>
+  // Function to check radio button when the custom input is filled
+  function checkCustom(word) {
+    document.getElementById(word).checked = true;
+  }
+  // IPA Characters Mapping
+  const ipaMapping = {
+    'a': ['ɑ', 'æ', 'ɐ', 'ʌ'],
+    'd': ['ð'],
+    'e': ['ə', 'ɚ', 'ɛ', 'ɜ'],
+    'i': ['ɪ', 'ᵻ'],
+    'n': ['ŋ'],
+    'o': ['ɔ', 'œ', 'ɒ',],
+    'r': ['ɾ', 'ɹ'],
+    's': ['ʃ'],
+    't': ['θ'],
+    'u': ['ʊ'],
+    'z': ['ʒ'],
+    ',': ['ˌ'],
+    ':': ['ː']
+  };
+
+
+  function toggleVariations(word) {
+    var variationsDiv = document.getElementById(word + "_variations");
+    var arrowImg = document.querySelector('[data-word="' + word + '"] img');
+    if (variationsDiv.style.display === "none") {
+        variationsDiv.style.display = "block";
+        document.querySelector('button[data-word="' + word + '"] i');
+        arrowImg.src = "../static/icons/arrow-bar-up.svg";
+    } else {
+        variationsDiv.style.display = "none";
+        document.querySelector('button[data-word="' + word + '"] i');
+        arrowImg.src = "../static/icons/arrow-bar-down.svg";
+    }
+  }
+    
+    function selectRadio(index) {
+        document.getElementById(index).checked = true;
+    }
+
+    var ipaPopupOpen = false;
+
+    function showIPAPopup(event, index) {
+        ipaPopupOpen = true;
+        var inputChar = event.target.value.slice(-1);   // get the last input character
+        var ipaOptions = ipaMapping[inputChar];         // get the mapping options
+        if (ipaOptions && ipaOptions.length > 0) {
+            var popup = document.getElementById('ipaPopup');
+            popup.innerHTML = ''; 
+            // generate option buttons based on the character
+            ipaOptions.forEach(function(ipaChar) {
+                var button = document.createElement('button');
+                button.textContent = ipaChar;
+                button.onclick = function() {
+                    insertIPA(ipaChar, index);
+                };
+                popup.appendChild(button);
+            });
+            // set position for popup
+            var inputField = document.getElementById("input_" + index);
+            var caretPosition = getCaretPosition(inputField);
+            var inputRect = event.target.getBoundingClientRect();
+            // Calculate the position of the popup
+            var topOffset = inputRect.top + window.pageYOffset + 30; // Adjust as needed
+            var leftOffset = inputRect.left + window.pageXOffset + caretPosition.left;
+
+            // Set the position of the popup
+            popup.style.top = topOffset + 'px';
+            popup.style.left = leftOffset + 'px';
+            popup.style.display = 'block';
+            if (ipaPopupOpen) {
+                // Add event listener for TAB key press
+                document.addEventListener('keydown', tabKeyHandler)
+            }
+        } else {
+            hideIPAPopup();
+        }
+    }
+    
+    function tabKeyHandler(event) {
+        if (event.key === 'Tab') {
+            // If IPA popup is visible, focus on the first button in the popup
+            if (document.getElementById('ipaPopup').style.display === 'block') {
+                event.preventDefault(); // Prevent default TAB behavior
+                // Get all buttons in the IPA popup
+                var buttons = document.querySelectorAll('#ipaPopup button');
+                var focusedButton = document.activeElement;
+                var index = Array.from(buttons).indexOf(focusedButton);
+                // If no button is focused or the focused button is the last one, focus on the first button
+                if (index === -1 || index === buttons.length - 1) {
+                    buttons[0].focus();
+                } else { // Focus on the next button
+                    buttons[index + 1].focus();
+                }
+            }
+        }
+    }
+    // Function to get the caret position in the input field
+    function getCaretPosition(inputField) {
+        var selection = window.getSelection();
+        var range = selection.getRangeAt(0);
+        var rect = range.getBoundingClientRect();
+        return {
+            top: rect.top,
+            left: rect.left
+        };
+    }
+    // insert selected character into input field
+    function insertIPA(ipaChar, index) {
+        var inputField = document.getElementById("input_" + index);
+        inputField.value = inputField.value.slice(0, -1) + ipaChar; 
+        inputField.focus();
+        hideIPAPopup(); 
+    }
+
+    function hideIPAPopup() {
+        document.getElementById('ipaPopup').style.display = 'none';
+        ipaPopupOpen = false;
+    }
+</script>
+
+
+{% endblock %}

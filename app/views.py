@@ -1,7 +1,10 @@
 import json
+import os
+import tempfile
 import time
 
 from flask import render_template, request, redirect, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.ipa_phonemizer import (
     phonemize, get_grapheme2phonemes_from_model,
@@ -9,8 +12,10 @@ from app.ipa_phonemizer import (
     tokenize, is_word
 )
 from app.matcha_utils import synthesize_matcha_audios
+from app.utils import get_word2phones_from_textgrid
 
 AUDIO = 'static/audio/utterance.wav'
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 Mb
 
 
 def text_to_audio_view():
@@ -48,10 +53,10 @@ def text_to_audio_view():
                 try:
                     add_graphemes_and_log(word2picked_phoneme)
                     db.session.commit()
-                except Exception as e:
+                except SQLAlchemyError as e:
                     # TODO: show the error to the user
                     db.session.rollback()
-                    print(e)
+                    print("Error!", e)
                     return redirect(url_for('interface.text_to_audio_view'))
             
             # fetch db phonemes after saving them to db
@@ -93,6 +98,96 @@ def grapheme_log_view(grapheme_id):
         grapheme=grapheme,
         phoneme=phoneme,
         grapheme_logs=grapheme_logs)
+
+
+def upload_file_view():
+    # imported here due to circular import
+    from app import db
+    from app.db_utils import filter_out_existing_words, save_word2phones
+
+    save_flag = False
+    errors = []
+    new_words2phones = {}
+    file_name = None
+    discarded_words = []
+    
+    file = request.files.get('file')
+    
+    if file:
+        file_name = file.filename[:50]
+        file_content = file.read()
+        if len(file_content) > MAX_FILE_SIZE:
+            errors.append('Please upload a file which is less than 5 Mb')
+        else: 
+            file.seek(0)
+
+            # Create a temporary file with a secure filename in order for textgrid to read it
+            # (textgrid can't read from a file object, it needs a path in a str format)
+            _, temp_path = tempfile.mkstemp(suffix=os.path.splitext(file.filename)[1])
+            
+            try:
+                with open(temp_path, 'wb') as temp_file:
+                    temp_file.write(file_content)
+                word2phones = get_word2phones_from_textgrid(temp_path)
+                if not word2phones:
+                    errors.append('No words found in the TextGrid. Please upload a new TextGrid.')
+                new_words2phones = filter_out_existing_words(word2phones)
+                if not new_words2phones:
+                    errors.append('All words from the TextGrid are already in the database.')
+
+            except Exception as e:
+                errors.append(f'An error happened during uploading of your file: {e}')
+
+            finally:
+                os.remove(temp_path)
+
+    elif request.form.get('confirm_changes'):
+        form = request.form
+        print('form:', form)
+
+        file_name  = form['file_name']
+        new_words2phones = {}
+        discarded_words = []
+        for word in json.loads(form['jsoned_new_words2phones']):
+            phones_from_form = form.getlist(word)
+            picked_phones = [phone for phone in phones_from_form if phone]
+            if not picked_phones or picked_phones[0] == 'discard':
+                picked_phone = None
+                discarded_words.append(word)
+            else:
+                picked_phone = picked_phones[0]
+            new_words2phones[word] = picked_phone
+        print(f'{new_words2phones=}')
+        print(f'{discarded_words=}')
+        try:                
+            save_word2phones(new_words2phones)
+            db.session.rollback()
+            #db.session.commit()
+            save_flag = True
+        except SQLAlchemyError as e:
+            print(f'Error: {e}')
+            errors.append('An error happened during saving of your file')
+            db.session.rollback()
+            
+        # in order to display it in the same format in html (word: [phones]),
+        # wrap each phone in a list
+        new_words2phones = {
+            word: [phone] 
+            if phone is not None 
+            else [] 
+            for word, phone in new_words2phones.items()
+        }
+
+    print(f'{errors=}')
+
+    return render_template('upload-file.html', 
+        new_words2phones=new_words2phones,
+        file_name=file_name,
+        jsoned_new_words2phones=json.dumps(new_words2phones, ensure_ascii=False),
+        save_flag=save_flag,
+        errors=errors,
+        discarded_words=discarded_words,
+    )
 
 
 def timestamp_audio(filename):

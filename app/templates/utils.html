@@ -1,0 +1,63 @@
+{% macro display_phoneme_input(word, phoneme, audio_name, index, checked, db_phoneme, from_form=False) %}
+  {% set audio_url = "../static/audio/" + audio_name + ".wav" %}
+  <div class="form-check" onclick="playAudio('{{ audio_url }}')">
+    <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" 
+        id="{{ word }}_{{ index }}"
+        {% if checked %}checked{% endif %}
+    >
+    <label class="form-check-label" 
+        for="{{ word }}_{{ index }}" 
+        {% if db_phoneme %} 
+          style="color: #006400"
+        {% elif from_form %} 
+          style="color: #1900ff"
+        {% endif %}     
+    >
+      {{ phoneme }} {% if db_phoneme %} (saved) {% endif %}
+    </label>
+  </div>
+  <audio class="audio" data-src="{{ audio_url }}" id="audioPlayerPhoneme"></audio>
+{% endmacro %}
+
+{% macro display_phone_from_textgrid(word, phone, index, checked=False) %}
+  <div class="form-check">
+    <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phone }}" 
+        id="{{ word }}_{{ index }}"
+        {% if checked %}checked{% endif %}
+    >
+    <label class="form-check-label" for="{{ word }}_{{ index }}">
+      {{ phone }} 
+    </label>
+  </div>
+{% endmacro %}
+
+
+{% macro upload_file_button(back=False) %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div> <!-- This div is for aligning Upload button on the right -->
+      {% if back %}
+        <a href="{{ url_for('interface.text_to_audio_view') }}" class="btn btn-secondary">Back to G2P main</a>
+      {% endif %}
+    </div>
+  
+  <!-- Upload button-->
+  <div>
+    <form id="uploadForm" action="{{ url_for('interface.upload_file_view') }}" method="POST" enctype="multipart/form-data">
+      <input type="file" 
+        name="file" 
+        id="uploadFile" 
+        style="display:none; width:100px;" 
+        accept=".TextGrid"
+        required="required"
+      >
+      <label for="uploadFile" class="btn btn-success">Upload TextGrid</label>
+      <script>
+        document.getElementById('uploadFile').onchange = function() {
+            document.getElementById('uploadForm').submit();
+        };
+    </script>
+    </form>
+  </div>
+</div>
+{% endmacro %}
+
