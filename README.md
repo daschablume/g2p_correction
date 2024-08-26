@@ -33,9 +33,14 @@ Supervisors: Jens Edlund and Jim O'Regan.
 #### Setup ####
 1. Download/clone the repository
 2. Have your Docker app open
-3. ```docker pull ubuntu:22.04``` – if you don't have an ubuntu image in your docker
-4. Being inside the `g2p_correction` directory, build the Docker image:
-    ```docker build -t g2p_correction:latest .```
+3. If you don't have an ubuntu base image amongs your docker images, run this
+```
+docker pull ubuntu:22.04
+``` 
+5. Being inside the `g2p_correction` directory, build the Docker image:
+    ```
+   docker build -t g2p_correction:latest .
+    ```
 
 #### Running the app within Docker Container ####
 
