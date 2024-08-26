@@ -1,6 +1,7 @@
+dataclassy==1.0.1
 flask==3.0.2
 Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.7
-dataclassy==1.0.1
+praatio==6.2.0
 pynini==2.1.6.post1
 matcha-tts
