@@ -143,7 +143,6 @@ def upload_file_view():
 
     elif request.form.get('confirm_changes'):
         form = request.form
-        print('form:', form)
 
         file_name  = form['file_name']
         new_words2phones = {}
@@ -157,12 +156,9 @@ def upload_file_view():
             else:
                 picked_phone = picked_phones[0]
             new_words2phones[word] = picked_phone
-        print(f'{new_words2phones=}')
-        print(f'{discarded_words=}')
         try:                
             save_word2phones(new_words2phones)
-            db.session.rollback()
-            #db.session.commit()
+            db.session.commit()
             save_flag = True
         except SQLAlchemyError as e:
             print(f'Error: {e}')
@@ -177,8 +173,6 @@ def upload_file_view():
             else [] 
             for word, phone in new_words2phones.items()
         }
-
-    print(f'{errors=}')
 
     return render_template('upload-file.html', 
         new_words2phones=new_words2phones,
@@ -239,4 +233,4 @@ def pick_phoneme_from_form(word2phonemes, form):
                 word2picked_phoneme[word] = picked_phoneme
                 word2phonemes[word].extend(new_phonemes)
     
-    return word2phonemes, word2picked_phoneme   
+    return word2phonemes, word2picked_phoneme

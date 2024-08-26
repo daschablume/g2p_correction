@@ -5,6 +5,8 @@ from sqlalchemy import DateTime
 from datetime import datetime
 
 
+# TODO: refactor the models to use the same naming convention
+# Grapheme represents a Word, while phoneme represents its transcription
 class Grapheme(db.Model):
     __tablename__ = 'graphemes'
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +16,6 @@ class Grapheme(db.Model):
     __table_args__ = (
         db.Index('grapheme_table_grapheme_index', grapheme),
     )
-
     
     def __repr__(self):
         return f'Grapheme: <{self.grapheme}>, phoneme=[{self.phoneme}]'

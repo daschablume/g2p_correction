@@ -63,9 +63,12 @@
                   </button>
                   {{ word }}
                 </div>
-                <div class="card-body" id="{{ word }}_variations" style="display: block;">
+                <div class="card-body" id="{{ word }}_variations" 
+                      {% if save_flag %} style="display: none;"
+                      {% else %} style="display: block;" {% endif %}
+                >
                   {% if word in discarded_words %}
-                    <p style="color: #ee0a0a;">This word has been discarded.</p>
+                    <p style="color: #ee0a0a;">This word was discarded.</p>
                   {% else %}
                     {% for phone in phones %}
                       {{ display_phone_from_textgrid(word, phone, index=loop.index, checked=loop.index == 1) }}
@@ -73,8 +76,8 @@
                   {% endif %}
                   <div class="form-check mt-3">
                     <input type="radio" class="form-check-input" name="{{ word }}" value="{{ phoneme }}" id="{{ loop.index }}">
-                    <input name="{{ word }}" placeholder="Provide your own" id="input_{{ loop.index }}" autocomplete="off" onkeyup="showIPAPopup(event, '{{loop.index}}')"
-                            onkeyup="checkCustom('{{ word }}')" onfocus="checkCustom('{{ word }}')">
+                    <input name="{{ word }}" placeholder="Provide your own" id="input_{{ loop.index }}" autocomplete="off" 
+                           onkeyup="handleTyping(event, '{{ loop.index }}')">    
                   </div>
                   {% if word not in discarded_words %}
                     <div class="form-check mt-3">
@@ -215,6 +218,14 @@
     function hideIPAPopup() {
         document.getElementById('ipaPopup').style.display = 'none';
         ipaPopupOpen = false;
+    }
+
+    function handleTyping(event, index) {
+        // Show the IPA popup (you can replace this with your existing IPA logic)
+        showIPAPopup(event, index);
+        
+        // Check the corresponding radio button
+        document.getElementById(index).checked = true;
     }
 </script>
 

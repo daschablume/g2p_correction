@@ -115,6 +115,9 @@ def save_word2phones(word2phones: dict[str, str]):
     )
 
     for row in words_in_db_rows:
+        if not word2phones[row.grapheme]:
+            db.session.delete(Grapheme.query.get(row.id))
+            continue
         (Grapheme.query
         .filter(Grapheme.id == row.id)
         .update
@@ -130,9 +133,7 @@ def save_word2phones(word2phones: dict[str, str]):
         already_existing.append(row.grapheme)
 
     for word, phone in word2phones.items():
-        if not phone:
-            continue
-        if word in already_existing:
+        if not phone or word in already_existing:
             continue
         grapheme = Grapheme(grapheme=word, phoneme=phone) 
         db.session.add(grapheme)
