@@ -9,24 +9,39 @@ Supervisors: Jens Edlund and Jim O'Regan.
 #### Setup ####
 1. Download/clone this repo
 2. Ensure you have conda and add the conda-forge channel to your Conda configuration  
-`conda config --add channels conda-forge`
+```
+conda config --add channels conda-forge
+```
 3. Create virtuatual environment with python>=3.9 and activate it   
-`conda create --name g2p_env python=3.10
-`
+```
+conda create --name g2p_env python=3.10
+```
 4. Activate the environment
-`conda activate g2p_env`
+```
+conda activate g2p_env
+```
 5. Comment out `matcha-tts` in requirements.txt (because one can install matcha-tts package only using pip)
 6. Install requirements using conda
-`conda install --file requirements.txt`
-7. Install matcha-tts using pip 
-`pip install matcha-tts`
+```
+conda install --file requirements.txt
+```
+8. Install matcha-tts using pip 
+```
+pip install matcha-tts
+```
   
 #### Run the app ####
-1. `export FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"`
-2. `cd YOU_ABSOLUTE_PATH/g2p_corrections`
+1. 
+```
+export FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"
+```
+3. `cd YOU_ABSOLUTE_PATH/g2p_corrections`
 (if you are having problems with locating your flask app within your venv, try this: 
 `export FLASK_ENV=development`)
-3. `flask run`
+4. 
+```
+flask run
+```
 
 ## How to install and run — with Docker ##
 
