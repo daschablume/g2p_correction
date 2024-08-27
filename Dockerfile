@@ -23,15 +23,21 @@ WORKDIR /g2p_correction
 COPY . /g2p_correction
 
 # Install Python dependencies using pip
-COPY requirements.txt /g2p_correction/requirements.txt
 RUN pip install --no-cache-dir -r /g2p_correction/requirements.txt
 
 # Install espeak
 RUN apt-get update && apt-get install -y espeak && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy models for Matcha
-COPY matcha-models/ /root/.local/share/matcha_tts/
+# Set up the environment variable for matcha storage
+ENV USER_DATA_DIR=/root/.local/share/matcha_tts
+
+# Create the directory structure for matcha models
+RUN mkdir -p $USER_DATA_DIR
+
+# Download models directly into the container
+RUN wget -O $USER_DATA_DIR/matcha_ljspeech.ckpt https://github.com/shivammehta25/Matcha-TTS-checkpoints/releases/download/v1.0/matcha_ljspeech.ckpt && \
+    wget -O $USER_DATA_DIR/hifigan_T2_v1 https://github.com/shivammehta25/Matcha-TTS-checkpoints/releases/download/v1.0/generator_v1
 
 # Set environment variables for Flask
 ENV FLASK_APP=/g2p_correction/g2p_correction.py
