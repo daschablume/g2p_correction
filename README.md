@@ -21,7 +21,7 @@ conda create --name g2p_env python=3.10
 ```
 conda activate g2p_env
 ```
-**5. Comment out `matcha-tts` in requirements.txt (because one can install matcha-tts package only using pip)**
+**5. Comment out `matcha-tts` in requirements.txt** (because one can install matcha-tts package only using pip)
 
 **6. Install requirements using conda**
 ```
@@ -31,21 +31,27 @@ conda install --file requirements.txt
 ```
 pip install matcha-tts
 ```
-  
-### Run the app ###
-**1.** 
+
+**8. Locate your flask app** 
 ```
 export FLASK_APP="YOU_ABSOLUTE_PATH/g2p_correction/g2p_correction.py"
 ```
 
-**2.** `cd YOU_ABSOLUTE_PATH/g2p_corrections`
-
-**3. If you are having problems with locating your flask app within your venv, try this:** 
+8a. If you are having problems with locating your flask app within your venv, try this:
 ```
-export FLASK_ENV=development`
+export FLASK_ENV=development
 ```
 
-**4.**
+**9. Set up your database** 
+
+```
+cd YOU_ABSOLUTE_PATH/g2p_corrections
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+```
+
+### Run the app ###
 ```
 flask run
 ```
