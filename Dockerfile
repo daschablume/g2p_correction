@@ -47,5 +47,11 @@ ENV FLASK_RUN_PORT=5000
 # Expose the port that the app runs on
 EXPOSE 5000
 
+# Make the entrypoint script executable
+RUN chmod +x entrypoint.sh
+
+# Set the entrypoint to the script
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Set the entry point to run the Flask app
 ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
