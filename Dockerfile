@@ -53,5 +53,5 @@ RUN chmod +x entrypoint.sh
 # Set the entrypoint to the script
 ENTRYPOINT ["/entrypoint.sh"]
 
-# Set the entry point to run the Flask app
-ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
+# this one goes to Dockerfile (instead of the second ENTRYPOINT)
+CMD ["flask", "run", "--host=0.0.0.0"]

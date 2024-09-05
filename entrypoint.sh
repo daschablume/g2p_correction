@@ -24,3 +24,6 @@ if ! check_db_initialized; then
 else
     echo "Skipping database initialization."
 fi
+
+# Start a bash shell
+exec "$@"
