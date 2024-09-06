@@ -48,10 +48,10 @@ ENV FLASK_RUN_PORT=5000
 EXPOSE 5000
 
 # Make the entrypoint script executable
-RUN chmod +x entrypoint.sh
+RUN chmod +x /g2p_correction/entrypoint.sh
 
 # Set the entrypoint to the script
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/g2p_correction/entrypoint.sh"]
 
 # this one goes to Dockerfile (instead of the second ENTRYPOINT)
 CMD ["flask", "run", "--host=0.0.0.0"]
