@@ -51,7 +51,7 @@ EXPOSE 5000
 RUN chmod +x entrypoint.sh
 
 # Set the entrypoint to the script
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 
 # this one goes to Dockerfile (instead of the second ENTRYPOINT)
 CMD ["flask", "run", "--host=0.0.0.0"]
