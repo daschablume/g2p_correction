@@ -1,6 +1,7 @@
 # Grapheme to phoneme: correction using user interface
 
-Powered by matcha-tts and *retrained montreal forced alignment model (*since matcha-tts is using espeak).
+Web application for Human-in-the-loop Grapeme-to-phoneme correction.
+Powered by [matcha-tts](https://github.com/shivammehta25/Matcha-TTS) and retrained [Montreal Forced Aligner](https://montreal-forced-aligner.readthedocs.io/en/latest/) model.
 A part of the KTH course "Speech Technology".
 Supervisors: Jens Edlund and Jim O'Regan.
 
